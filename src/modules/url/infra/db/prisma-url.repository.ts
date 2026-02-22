@@ -1,0 +1,129 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
+import { Url } from '../../domain/entities/Url.entity';
+import { IUrlRepository } from '../../domain/repositories/IUrlRepository';
+import { ShortCodeVO } from '../../domain/value-objects/ShortCode.vo';
+import { UrlVO } from '../../domain/value-objects/Url.vo';
+
+@Injectable()
+export class PrismaUrlRepository implements IUrlRepository {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(url: Url): Promise<Url> {
+    const result = await this.prisma.url.create({
+      data: {
+        originalUrl: url.originalUrl.value,
+        shortCode: url.shortCode.value,
+        userId: url.userId,
+        expiresAt: url.expiresAt,
+      },
+    });
+
+    return new Url(
+      result.id,
+      new UrlVO(result.originalUrl),
+      new ShortCodeVO(result.shortCode),
+      result.expiresAt ?? undefined,
+      result.userId ?? undefined,
+      result.createdAt,
+      result.updatedAt,
+      result.deletedAt ?? undefined,
+    );
+  }
+
+  async findByShortCode(shortCode: string): Promise<Url | null> {
+    const result = await this.prisma.url.findUnique({
+      where: { shortCode, deletedAt: null },
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return new Url(
+      result.id,
+      new UrlVO(result.originalUrl),
+      new ShortCodeVO(result.shortCode),
+      result.expiresAt ?? undefined,
+      result.userId ?? undefined,
+      result.createdAt,
+      result.updatedAt,
+      result.deletedAt ?? undefined,
+    );
+  }
+
+  async findById(id: string): Promise<Url | null> {
+    const result = await this.prisma.url.findUnique({
+      where: { id, deletedAt: null },
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return new Url(
+      result.id,
+      new UrlVO(result.originalUrl),
+      new ShortCodeVO(result.shortCode),
+      result.expiresAt ?? undefined,
+      result.userId ?? undefined,
+      result.createdAt,
+      result.updatedAt,
+      result.deletedAt ?? undefined,
+    );
+  }
+
+  async findAll(): Promise<Url[]> {
+    const result = await this.prisma.url.findMany({
+      where: { deletedAt: null },
+    });
+
+    return result.map(
+      (result) =>
+        new Url(
+          result.id,
+          new UrlVO(result.originalUrl),
+          new ShortCodeVO(result.shortCode),
+          result.expiresAt ?? undefined,
+          result.userId ?? undefined,
+          result.createdAt,
+          result.updatedAt,
+          result.deletedAt ?? undefined,
+        ),
+    );
+  }
+
+  async update(url: Url): Promise<Url | null> {
+    const result = await this.prisma.url.update({
+      where: { id: url.id, deletedAt: null },
+      data: {
+        originalUrl: url.originalUrl.value,
+        shortCode: url.shortCode.value,
+        expiresAt: url.expiresAt,
+        userId: url.userId,
+      },
+    });
+
+    if (!result) {
+      return null;
+    }
+
+    return new Url(
+      result.id,
+      new UrlVO(result.originalUrl),
+      new ShortCodeVO(result.shortCode),
+      result.expiresAt ?? undefined,
+      result.userId ?? undefined,
+      result.createdAt,
+      result.updatedAt,
+      result.deletedAt ?? undefined,
+    );
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.url.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+}
