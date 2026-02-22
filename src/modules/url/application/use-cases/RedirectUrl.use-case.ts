@@ -15,7 +15,6 @@ export class RedirectUrlUseCase {
     }
 
     if (url.expiresAt && url.expiresAt < new Date()) {
-      await this.urlRepository.delete(url.id!);
       return null;
     }
 

@@ -7,7 +7,8 @@ import {
   Post,
   Redirect,
 } from '@nestjs/common';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/GetAllShortenedUrls.use-case';
 import { RedirectUrlUseCase } from '../../application/use-cases/RedirectUrl.use-case';
 import { ShortenUrlUseCase } from '../../application/use-cases/ShortenUrl.use-case';
 import { UrlVO } from '../../domain/value-objects/Url.vo';
@@ -19,6 +20,7 @@ export class UrlController {
   constructor(
     private readonly shortenUrlUseCase: ShortenUrlUseCase,
     private readonly redirectUrlUseCase: RedirectUrlUseCase,
+    private readonly getAllShortenedUrlsUseCase: GetAllShortenedUrlsUseCase,
   ) {}
 
   @Post('shorten')
@@ -57,5 +59,22 @@ export class UrlController {
       url: url.originalUrl.value,
       statusCode: 302,
     };
+  }
+
+  @Get()
+  @ApiOkResponse({ type: [ShortenUrlResponse] })
+  async getAllShortenedUrls(): Promise<ShortenUrlResponse[]> {
+    const urls = await this.getAllShortenedUrlsUseCase.execute();
+
+    return urls.map((url) => ({
+      id: url.id!,
+      originalUrl: url.originalUrl.value,
+      shortCode: url.shortCode.value,
+      expiresAt: url.expiresAt,
+      userId: url.userId,
+      createdAt: url.createdAt,
+      updatedAt: url.updatedAt,
+      deletedAt: url.deletedAt,
+    }));
   }
 }
