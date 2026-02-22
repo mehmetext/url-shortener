@@ -11,12 +11,22 @@ export class UrlController {
 
   @Post('shorten')
   @ApiCreatedResponse({ type: ShortenUrlResponse })
-  async shortenUrl(@Body() body: ShortenUrlDto) {
+  async shortenUrl(@Body() body: ShortenUrlDto): Promise<ShortenUrlResponse> {
     const url = new UrlVO(body.originalUrl);
 
-    return this.shortenUrlUseCase.execute({
+    const result = await this.shortenUrlUseCase.execute({
       originalUrl: url,
       expiresAt: body.expiresAt,
     });
+
+    return {
+      id: result.id!,
+      originalUrl: result.originalUrl.value,
+      shortCode: result.shortCode.value,
+      expiresAt: result.expiresAt,
+      userId: result.userId,
+      createdAt: result.createdAt,
+      updatedAt: result.updatedAt,
+    };
   }
 }
