@@ -1,5 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  Redirect,
+} from '@nestjs/common';
 import { ApiCreatedResponse } from '@nestjs/swagger';
+import { RedirectUrlUseCase } from '../../application/use-cases/RedirectUrl.use-case';
 import { ShortenUrlUseCase } from '../../application/use-cases/ShortenUrl.use-case';
 import { UrlVO } from '../../domain/value-objects/Url.vo';
 import { ShortenUrlDto } from './dtos/shorten.dto';
@@ -7,7 +16,10 @@ import { ShortenUrlResponse } from './dtos/shorten.response';
 
 @Controller('url')
 export class UrlController {
-  constructor(private readonly shortenUrlUseCase: ShortenUrlUseCase) {}
+  constructor(
+    private readonly shortenUrlUseCase: ShortenUrlUseCase,
+    private readonly redirectUrlUseCase: RedirectUrlUseCase,
+  ) {}
 
   @Post('shorten')
   @ApiCreatedResponse({ type: ShortenUrlResponse })
@@ -27,6 +39,23 @@ export class UrlController {
       userId: result.userId,
       createdAt: result.createdAt,
       updatedAt: result.updatedAt,
+    };
+  }
+
+  @Get(':shortCode')
+  @Redirect()
+  async redirectUrl(
+    @Param('shortCode') shortCode: string,
+  ): Promise<{ url: string; statusCode: number }> {
+    const url = await this.redirectUrlUseCase.execute(shortCode);
+
+    if (!url) {
+      throw new NotFoundException('URL not found');
+    }
+
+    return {
+      url: url.originalUrl.value,
+      statusCode: 302,
     };
   }
 }
