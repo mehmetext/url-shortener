@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 
 export class ShortenUrlDto {
   @IsString()
@@ -10,4 +16,12 @@ export class ShortenUrlDto {
     example: 'https://www.google.com',
   })
   originalUrl: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ApiProperty({
+    description: 'The expiration date',
+    example: new Date().toISOString(),
+  })
+  expiresAt?: Date;
 }

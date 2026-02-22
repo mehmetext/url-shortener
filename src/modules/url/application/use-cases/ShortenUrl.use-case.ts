@@ -3,21 +3,21 @@ import { nanoid } from 'nanoid';
 import { Url } from '../../domain/entities/Url.entity';
 import { IUrlRepository } from '../../domain/repositories/IUrlRepository';
 import { ShortCodeVO } from '../../domain/value-objects/ShortCode.vo';
-import { UrlVO } from '../../domain/value-objects/Url.vo';
+import { ShortenUrlDto } from '../dtos/shorten.dto';
 
 export class ShortenUrlUseCase {
   constructor(
     @Inject(IUrlRepository) private readonly urlRepository: IUrlRepository,
   ) {}
 
-  async execute(originalUrl: UrlVO): Promise<Url> {
+  async execute(dto: ShortenUrlDto): Promise<Url> {
     const shortCode = new ShortCodeVO(nanoid(6));
 
     const url = new Url(
       undefined,
-      originalUrl,
+      dto.originalUrl,
       shortCode,
-      undefined,
+      dto.expiresAt,
       undefined,
       new Date(),
       new Date(),

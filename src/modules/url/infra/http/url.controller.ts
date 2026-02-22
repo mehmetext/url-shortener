@@ -9,6 +9,11 @@ export class UrlController {
 
   @Post('shorten')
   async shortenUrl(@Body() body: ShortenUrlDto) {
-    return this.shortenUrlUseCase.execute(new UrlVO(body.originalUrl));
+    const url = new UrlVO(body.originalUrl);
+
+    return this.shortenUrlUseCase.execute({
+      originalUrl: url,
+      expiresAt: body.expiresAt,
+    });
   }
 }
