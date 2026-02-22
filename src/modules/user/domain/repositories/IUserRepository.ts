@@ -1,0 +1,10 @@
+import { User } from '../entities/user.entity';
+import { EmailVO } from '../value-objects/email.vo';
+
+export abstract class IUserRepository {
+  abstract create(user: User): Promise<User>;
+  abstract findByEmail(email: EmailVO): Promise<User | null>;
+  abstract findById(id: string): Promise<User | null>;
+  abstract update(user: User): Promise<User | null>;
+  abstract delete(id: string): Promise<void>;
+}
