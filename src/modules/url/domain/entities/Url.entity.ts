@@ -1,5 +1,5 @@
-import { ShortCodeVO } from '../value-objects/ShortCode.vo';
-import { UrlVO } from '../value-objects/Url.vo';
+import { ShortCodeVO } from '../value-objects/short-code.vo';
+import { UrlVO } from '../value-objects/url.vo';
 
 export class Url {
   constructor(

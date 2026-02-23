@@ -1,4 +1,4 @@
-import { Url } from '../entities/Url.entity';
+import { Url } from '../entities/url.entity';
 
 export abstract class IUrlRepository {
   abstract create(url: Url): Promise<Url>;

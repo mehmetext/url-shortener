@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
-import { Url } from '../../domain/entities/Url.entity';
-import { IUrlRepository } from '../../domain/repositories/IUrlRepository';
-import { ShortCodeVO } from '../../domain/value-objects/ShortCode.vo';
-import { UrlVO } from '../../domain/value-objects/Url.vo';
+import { Url } from '../../domain/entities/url.entity';
+import { IUrlRepository } from '../../domain/repositories/url.repository';
+import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
+import { UrlVO } from '../../domain/value-objects/url.vo';
 
 @Injectable()
 export class PrismaUrlRepository implements IUrlRepository {

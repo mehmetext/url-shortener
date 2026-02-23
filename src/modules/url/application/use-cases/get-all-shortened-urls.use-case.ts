@@ -1,5 +1,5 @@
 import { Inject } from '@nestjs/common';
-import { IUrlRepository } from '../../domain/repositories/IUrlRepository';
+import { IUrlRepository } from '../../domain/repositories/url.repository';
 
 export class GetAllShortenedUrlsUseCase {
   constructor(

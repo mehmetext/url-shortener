@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { Url } from '../../domain/entities/Url.entity';
-import { IUrlRepository } from '../../domain/repositories/IUrlRepository';
+import { Url } from '../../domain/entities/url.entity';
+import { IUrlRepository } from '../../domain/repositories/url.repository';
 
 export class RedirectUrlUseCase {
   constructor(

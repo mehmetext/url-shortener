@@ -1,8 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { nanoid } from 'nanoid';
-import { Url } from '../../domain/entities/Url.entity';
-import { IUrlRepository } from '../../domain/repositories/IUrlRepository';
-import { ShortCodeVO } from '../../domain/value-objects/ShortCode.vo';
+import { Url } from '../../domain/entities/url.entity';
+import { IUrlRepository } from '../../domain/repositories/url.repository';
+import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { ShortenUrlDto } from '../dtos/shorten.dto';
 
 export class ShortenUrlUseCase {

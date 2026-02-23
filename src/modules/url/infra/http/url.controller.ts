@@ -8,10 +8,10 @@ import {
   Redirect,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
-import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/GetAllShortenedUrls.use-case';
-import { RedirectUrlUseCase } from '../../application/use-cases/RedirectUrl.use-case';
-import { ShortenUrlUseCase } from '../../application/use-cases/ShortenUrl.use-case';
-import { UrlVO } from '../../domain/value-objects/Url.vo';
+import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/get-all-shortened-urls.use-case';
+import { RedirectUrlUseCase } from '../../application/use-cases/redirect-url.use-case';
+import { ShortenUrlUseCase } from '../../application/use-cases/shorten-url.use-case';
+import { UrlVO } from '../../domain/value-objects/url.vo';
 import { ShortenUrlDto } from './dtos/shorten.dto';
 import { ShortenUrlResponse } from './dtos/shorten.response';
 
