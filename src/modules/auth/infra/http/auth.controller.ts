@@ -7,7 +7,7 @@ import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user.response';
 import { LoginUseCase } from '../../application/use-cases/Login.use-case';
 import { LoginDto } from '../dtos/login.dto';
-import { LoginResponseDto } from '../dtos/Login.response';
+import { LoginResponseDto } from '../dtos/login.response';
 
 @Controller('auth')
 export class AuthController {
