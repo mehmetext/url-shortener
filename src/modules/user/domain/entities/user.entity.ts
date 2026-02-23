@@ -9,4 +9,8 @@ export class User {
     public readonly updatedAt: Date,
     public readonly deletedAt: Date | undefined,
   ) {}
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }

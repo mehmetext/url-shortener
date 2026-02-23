@@ -12,4 +12,12 @@ export class Url {
     public readonly updatedAt: Date,
     public readonly deletedAt: Date | undefined,
   ) {}
+
+  isExpired(now: Date = new Date()): boolean {
+    return !!this.expiresAt && this.expiresAt < now;
+  }
+
+  isDeleted(): boolean {
+    return !!this.deletedAt;
+  }
 }
