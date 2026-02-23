@@ -1,9 +1,14 @@
+import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { BaseResponseInterceptor } from './shared/interceptors/base-response.interceptor';
 
 async function bootstrap() {
+  if (!process.env.PORT) {
+    throw new Error('PORT is not set');
+  }
+
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
@@ -11,13 +16,29 @@ async function bootstrap() {
     .setDescription('The URL Shortener API description')
     .setVersion('1.0')
     .addTag('url-shortener')
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      exceptionFactory: (errors) => {
+        const errorMessages = errors.flatMap((error) =>
+          Object.values(error.constraints ?? {}),
+        );
+
+        return new BadRequestException(errorMessages);
+      },
+    }),
+  );
+
   app.useGlobalInterceptors(new BaseResponseInterceptor());
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT);
 }
 
 void bootstrap();
