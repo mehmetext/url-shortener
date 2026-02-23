@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
-import { CreateUserDto } from 'src/modules/user/application/dtos/create-user.dto';
+import { CreateUserCommand } from 'src/modules/user/application/dtos/create-user.command';
 import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
-import { LoginResponseDto } from '../dtos/login.response';
+import { LoginResult } from '../dtos/login.result';
 import { LoginUseCase } from './login.use-case';
 
 export class RegisterUseCase {
@@ -10,8 +10,8 @@ export class RegisterUseCase {
     @Inject(LoginUseCase) private readonly loginUseCase: LoginUseCase,
   ) {}
 
-  async execute(dto: CreateUserDto): Promise<LoginResponseDto> {
-    const user = await this.userRepository.create(dto);
+  async execute(command: CreateUserCommand): Promise<LoginResult> {
+    const user = await this.userRepository.create(command);
 
     return this.loginUseCase.execute(user);
   }

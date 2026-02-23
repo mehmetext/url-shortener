@@ -9,14 +9,15 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/get-all-shortened-urls.use-case';
 import { RedirectUrlUseCase } from '../../application/use-cases/redirect-url.use-case';
 import { ShortenUrlUseCase } from '../../application/use-cases/shorten-url.use-case';
 import { UrlVO } from '../../domain/value-objects/url.vo';
-import { ShortenUrlDto } from './dtos/shorten.dto';
-import { ShortenUrlResponse } from './dtos/shorten.response';
+import { ShortenUrlResponseDto } from './dtos/shorten-url-response.dto';
+import { ShortenUrlDto } from './dtos/shorten-url.dto';
 
 @Controller('urls')
 export class UrlController {
@@ -27,8 +28,10 @@ export class UrlController {
   ) {}
 
   @Post('shorten')
-  @ApiCreatedResponse({ type: ShortenUrlResponse })
-  async shortenUrl(@Body() body: ShortenUrlDto): Promise<ShortenUrlResponse> {
+  @ApiCreatedResponseGeneric(ShortenUrlResponseDto)
+  async shortenUrl(
+    @Body() body: ShortenUrlDto,
+  ): Promise<ShortenUrlResponseDto> {
     const url = new UrlVO(body.originalUrl);
 
     const result = await this.shortenUrlUseCase.execute({
@@ -66,9 +69,9 @@ export class UrlController {
 
   @Get()
   @ApiBearerAuth()
-  @ApiOkResponseGeneric(ShortenUrlResponse, { isArray: true })
+  @ApiOkResponseGeneric(ShortenUrlResponseDto, { isArray: true })
   @UseGuards(AuthGuard('jwt'))
-  async getAllShortenedUrls(): Promise<ShortenUrlResponse[]> {
+  async getAllShortenedUrls(): Promise<ShortenUrlResponseDto[]> {
     const urls = await this.getAllShortenedUrlsUseCase.execute();
 
     return urls.map((url) => ({

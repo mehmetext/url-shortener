@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
 import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
-import { LoginResponseDto } from '../dtos/login.response';
+import { LoginResult } from '../dtos/login.result';
 import { LoginUseCase } from './login.use-case';
 
 export class RefreshTokenUseCase {
@@ -17,7 +17,7 @@ export class RefreshTokenUseCase {
     @Inject(LoginUseCase) private readonly loginUseCase: LoginUseCase,
   ) {}
 
-  async execute(oldRefreshToken: string): Promise<LoginResponseDto> {
+  async execute(oldRefreshToken: string): Promise<LoginResult> {
     let payload: { sub: string; jti: string };
 
     try {

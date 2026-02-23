@@ -2,15 +2,15 @@ import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { CreateUserDto } from 'src/modules/user/application/dtos/create-user.dto';
+import { CreateUserCommand } from 'src/modules/user/application/dtos/create-user.command';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
+import { LoginResponseDto } from '../dtos/login-response.dto';
 import { LoginDto } from '../dtos/login.dto';
-import { LoginResponseDto } from '../dtos/login.response';
 import { RegisterDto } from '../dtos/register.dto';
 
 @Controller('auth')
@@ -45,12 +45,12 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @ApiCreatedResponseGeneric(LoginResponseDto)
   async register(@Body() body: RegisterDto): Promise<LoginResponseDto> {
-    const createUserDto = new CreateUserDto(
+    const createUserCommand = new CreateUserCommand(
       new EmailVO(body.email),
       body.password,
     );
 
-    const user = await this.registerUseCase.execute(createUserDto);
+    const user = await this.registerUseCase.execute(createUserCommand);
 
     return {
       accessToken: user.accessToken,

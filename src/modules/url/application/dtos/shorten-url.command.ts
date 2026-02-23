@@ -1,6 +1,6 @@
 import { UrlVO } from '../../domain/value-objects/url.vo';
 
-export class ShortenUrlDto {
+export class ShortenUrlCommand {
   originalUrl: UrlVO;
   expiresAt?: Date;
 }
