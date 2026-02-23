@@ -1,23 +1,30 @@
-import { Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBody } from '@nestjs/swagger';
 import type { Request } from 'express';
+import { CreateUserDto } from 'src/modules/user/application/dtos/create-user.dto';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user.response';
+import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
+import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginDto } from '../dtos/login.dto';
 import { LoginResponseDto } from '../dtos/login.response';
+import { RegisterDto } from '../dtos/register.dto';
+import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     @Inject(LoginUseCase) private readonly loginUseCase: LoginUseCase,
+    @Inject(RegisterUseCase) private readonly registerUseCase: RegisterUseCase,
   ) {}
 
   @UseGuards(AuthGuard('local'))
   @Post('login')
   @ApiBody({ type: LoginDto })
+  @ApiOkResponseGeneric(LoginResponseDto)
   async login(
     @Req() req: Request & { user: UserResponseDto },
   ): Promise<LoginResponseDto> {
@@ -42,6 +49,31 @@ export class AuthController {
         createdAt: response.user.createdAt,
         updatedAt: response.user.updatedAt,
         deletedAt: response.user.deletedAt,
+      },
+    };
+  }
+
+  @Post('register')
+  @ApiBody({ type: RegisterDto })
+  @ApiCreatedResponseGeneric(LoginResponseDto)
+  async register(@Body() body: RegisterDto): Promise<LoginResponseDto> {
+    const createUserDto = new CreateUserDto(
+      new EmailVO(body.email),
+      body.password,
+    );
+
+    const user = await this.registerUseCase.execute(createUserDto);
+
+    return {
+      accessToken: user.accessToken,
+      refreshToken: user.refreshToken,
+      expiresIn: user.expiresIn,
+      user: {
+        id: user.user.id!,
+        email: user.user.email.value,
+        createdAt: user.user.createdAt,
+        updatedAt: user.user.updatedAt,
+        deletedAt: user.user.deletedAt,
       },
     };
   }
