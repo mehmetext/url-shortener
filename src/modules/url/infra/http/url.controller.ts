@@ -7,7 +7,8 @@ import {
   Post,
   Redirect,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/get-all-shortened-urls.use-case';
 import { RedirectUrlUseCase } from '../../application/use-cases/redirect-url.use-case';
 import { ShortenUrlUseCase } from '../../application/use-cases/shorten-url.use-case';
@@ -62,7 +63,7 @@ export class UrlController {
   }
 
   @Get()
-  @ApiOkResponse({ type: [ShortenUrlResponse] })
+  @ApiOkResponseGeneric(ShortenUrlResponse, { isArray: true })
   async getAllShortenedUrls(): Promise<ShortenUrlResponse[]> {
     const urls = await this.getAllShortenedUrlsUseCase.execute();
 
