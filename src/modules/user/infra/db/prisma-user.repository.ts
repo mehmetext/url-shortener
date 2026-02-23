@@ -1,16 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
 import { CreateUserCommand } from '../../application/dtos/create-user.command';
 import { User } from '../../domain/entities/user.entity';
-import { IUserRepository } from '../../domain/repositories/user.repository';
+import { UserNotFoundError } from '../../domain/errors';
+import { UserRepository } from '../../domain/repositories/user.repository';
 import { EmailVO } from '../../domain/value-objects/email.vo';
 
 @Injectable()
-export class PrismaUserRepository implements IUserRepository {
+export class PrismaUserRepository implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(command: CreateUserCommand): Promise<User> {
+    const existingUser = await this.findByEmail(command.email);
+
+    if (existingUser) {
+      throw new ConflictException('User already exists');
+    }
+
     const hashedPassword = await bcrypt.hash(command.password, 10);
 
     const created = await this.prisma.user.create({
@@ -30,11 +37,11 @@ export class PrismaUserRepository implements IUserRepository {
     );
   }
 
-  async findByEmail(email: EmailVO): Promise<User | null> {
+  async findByEmail(email: EmailVO): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { email: email.value },
     });
-    if (!user) return null;
+    if (!user) throw new UserNotFoundError();
     return new User(
       user.id,
       new EmailVO(user.email),
@@ -45,11 +52,11 @@ export class PrismaUserRepository implements IUserRepository {
     );
   }
 
-  async findById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
-    if (!user) return null;
+    if (!user) throw new UserNotFoundError();
     return new User(
       user.id,
       new EmailVO(user.email),
@@ -60,7 +67,13 @@ export class PrismaUserRepository implements IUserRepository {
     );
   }
 
-  async update(user: User): Promise<User | null> {
+  async update(user: User): Promise<User> {
+    const existingUser = await this.findById(user.id!);
+
+    if (!existingUser) {
+      throw new UserNotFoundError();
+    }
+
     const updated = await this.prisma.user.update({
       where: { id: user.id },
       data: {

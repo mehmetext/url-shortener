@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
+import { UrlNotFoundError } from '../../application/errors';
 import { Url } from '../../domain/entities/url.entity';
-import { IUrlRepository } from '../../domain/repositories/url.repository';
+import { UrlRepository } from '../../domain/repositories/url.repository';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { UrlVO } from '../../domain/value-objects/url.vo';
 
 @Injectable()
-export class PrismaUrlRepository implements IUrlRepository {
+export class PrismaUrlRepository implements UrlRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(url: Url): Promise<Url> {
@@ -31,13 +32,13 @@ export class PrismaUrlRepository implements IUrlRepository {
     );
   }
 
-  async findByShortCode(shortCode: string): Promise<Url | null> {
+  async findByShortCode(shortCode: string): Promise<Url> {
     const result = await this.prisma.url.findUnique({
       where: { shortCode, deletedAt: null },
     });
 
     if (!result) {
-      return null;
+      throw new UrlNotFoundError();
     }
 
     return new Url(
@@ -52,13 +53,13 @@ export class PrismaUrlRepository implements IUrlRepository {
     );
   }
 
-  async findById(id: string): Promise<Url | null> {
+  async findById(id: string): Promise<Url> {
     const result = await this.prisma.url.findUnique({
       where: { id, deletedAt: null },
     });
 
     if (!result) {
-      return null;
+      throw new UrlNotFoundError();
     }
 
     return new Url(
@@ -93,7 +94,7 @@ export class PrismaUrlRepository implements IUrlRepository {
     );
   }
 
-  async update(url: Url): Promise<Url | null> {
+  async update(url: Url): Promise<Url> {
     const result = await this.prisma.url.update({
       where: { id: url.id, deletedAt: null },
       data: {
@@ -105,7 +106,7 @@ export class PrismaUrlRepository implements IUrlRepository {
     });
 
     if (!result) {
-      return null;
+      throw new UrlNotFoundError();
     }
 
     return new Url(

@@ -1,12 +1,12 @@
 import { Inject } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/modules/user/domain/entities/user.entity';
-import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
+import { UserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 
 export class ValidateUserUseCase {
   constructor(
-    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
+    @Inject(UserRepository) private readonly userRepository: UserRepository,
   ) {}
 
   async execute(email: EmailVO, password: string): Promise<User | null> {

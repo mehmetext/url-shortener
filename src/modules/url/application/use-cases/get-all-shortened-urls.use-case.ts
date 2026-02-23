@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
-import { IUrlRepository } from '../../domain/repositories/url.repository';
+import { UrlRepository } from '../../domain/repositories/url.repository';
 
 export class GetAllShortenedUrlsUseCase {
   constructor(
-    @Inject(IUrlRepository) private readonly urlRepository: IUrlRepository,
+    @Inject(UrlRepository) private readonly urlRepository: UrlRepository,
   ) {}
 
   async execute() {

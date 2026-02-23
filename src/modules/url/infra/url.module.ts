@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { GetAllShortenedUrlsUseCase } from '../application/use-cases/get-all-shortened-urls.use-case';
 import { RedirectUrlUseCase } from '../application/use-cases/redirect-url.use-case';
 import { ShortenUrlUseCase } from '../application/use-cases/shorten-url.use-case';
-import { IUrlRepository } from '../domain/repositories/url.repository';
+import { UrlRepository } from '../domain/repositories/url.repository';
 import { PrismaUrlRepository } from './db/prisma-url.repository';
 import { UrlController } from './http/url.controller';
 
@@ -11,7 +11,7 @@ import { UrlController } from './http/url.controller';
   imports: [],
   providers: [
     {
-      provide: IUrlRepository,
+      provide: UrlRepository,
       useClass: PrismaUrlRepository,
     },
     ShortenUrlUseCase,

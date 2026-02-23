@@ -2,13 +2,13 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
+import { UserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     configService: ConfigService,
-    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
+    @Inject(UserRepository) private readonly userRepository: UserRepository,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

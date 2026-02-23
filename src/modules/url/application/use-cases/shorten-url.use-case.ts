@@ -1,13 +1,13 @@
 import { Inject } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import { Url } from '../../domain/entities/url.entity';
-import { IUrlRepository } from '../../domain/repositories/url.repository';
+import { UrlRepository } from '../../domain/repositories/url.repository';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { ShortenUrlCommand } from '../dtos/shorten-url.command';
 
 export class ShortenUrlUseCase {
   constructor(
-    @Inject(IUrlRepository) private readonly urlRepository: IUrlRepository,
+    @Inject(UrlRepository) private readonly urlRepository: UrlRepository,
   ) {}
 
   async execute(command: ShortenUrlCommand): Promise<Url> {

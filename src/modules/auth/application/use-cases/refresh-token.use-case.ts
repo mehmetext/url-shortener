@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
+import { UserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
 import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
 import { LoginResult } from '../dtos/login.result';
@@ -13,7 +13,7 @@ export class RefreshTokenUseCase {
     @Inject(RefreshTokenRepository)
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly configService: ConfigService,
-    @Inject(IUserRepository) private readonly userRepository: IUserRepository,
+    @Inject(UserRepository) private readonly userRepository: UserRepository,
     @Inject(LoginUseCase) private readonly loginUseCase: LoginUseCase,
   ) {}
 

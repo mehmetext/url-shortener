@@ -1,21 +1,22 @@
 import { Inject } from '@nestjs/common';
 import { Url } from '../../domain/entities/url.entity';
-import { IUrlRepository } from '../../domain/repositories/url.repository';
+import { UrlRepository } from '../../domain/repositories/url.repository';
+import { UrlExpiredError, UrlNotFoundError } from '../errors';
 
 export class RedirectUrlUseCase {
   constructor(
-    @Inject(IUrlRepository) private readonly urlRepository: IUrlRepository,
+    @Inject(UrlRepository) private readonly urlRepository: UrlRepository,
   ) {}
 
-  async execute(shortCode: string): Promise<Url | null> {
+  async execute(shortCode: string): Promise<Url> {
     const url = await this.urlRepository.findByShortCode(shortCode);
 
     if (!url) {
-      return null;
+      throw new UrlNotFoundError();
     }
 
-    if (url.expiresAt && url.expiresAt < new Date()) {
-      return null;
+    if (url.isExpired()) {
+      throw new UrlExpiredError();
     }
 
     return url;
