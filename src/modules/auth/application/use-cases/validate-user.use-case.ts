@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { User } from 'src/modules/user/domain/entities/user.entity';
-import { IUserRepository } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 
 export class ValidateUserUseCase {

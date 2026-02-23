@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { CreateUserDto } from 'src/modules/user/application/dtos/CreateUser.dto';
-import { IUserRepository } from 'src/modules/user/domain/repositories/IUserRepository';
+import { CreateUserDto } from 'src/modules/user/application/dtos/create-user.dto';
+import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { LoginResponseDto } from '../dtos/login.response';
 import { LoginUseCase } from './login.use-case';
 

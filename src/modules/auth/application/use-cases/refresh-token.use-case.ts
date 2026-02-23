@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { IUserRepository } from 'src/modules/user/domain/repositories/IUserRepository';
+import { IUserRepository } from 'src/modules/user/domain/repositories/user.repository';
 import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
 import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
 import { LoginResponseDto } from '../dtos/login.response';
