@@ -52,11 +52,12 @@ export class PrismaUserRepository implements UserRepository {
     );
   }
 
-  async findById(id: string): Promise<User> {
+  async findById(id: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
-    if (!user) throw new UserNotFoundError();
+    if (!user) return null;
+
     return new User(
       user.id,
       new EmailVO(user.email),

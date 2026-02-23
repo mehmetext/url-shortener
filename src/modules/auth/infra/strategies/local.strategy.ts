@@ -1,7 +1,8 @@
-import { Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { User } from 'src/modules/user/domain/entities/user.entity';
+import { UserInvalidCredentialsError } from 'src/modules/user/domain/errors';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 import { ValidateUserUseCase } from '../../application/use-cases/validate-user.use-case';
 
@@ -21,7 +22,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.validateUserUseCase.execute(emailVO, password);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UserInvalidCredentialsError();
     }
 
     return user;

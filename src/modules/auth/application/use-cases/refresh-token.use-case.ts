@@ -1,6 +1,8 @@
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { UserNotFoundError } from 'src/modules/user/domain/errors';
 import { UserRepository } from 'src/modules/user/domain/repositories/user.repository';
+import { InvalidTokenError } from '../../domain/errors';
 import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
 import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
 import { LoginResult } from '../dtos/login.result';
@@ -25,7 +27,7 @@ export class RefreshTokenUseCase {
         secret: this.configService.getOrThrow<string>('REFRESH_TOKEN_SECRET'),
       });
     } catch {
-      throw new Error('Invalid token');
+      throw new InvalidTokenError();
     }
 
     const savedToken = await this.refreshTokenRepository.findByUserIdAndJti(
@@ -34,18 +36,18 @@ export class RefreshTokenUseCase {
     );
 
     if (!savedToken) {
-      throw new Error('Invalid token');
+      throw new InvalidTokenError();
     }
 
     if (savedToken !== oldRefreshToken) {
       await this.refreshTokenRepository.delete(payload.sub, payload.jti);
-      throw new Error('Invalid token');
+      throw new InvalidTokenError();
     }
 
     const user = await this.userRepository.findById(payload.sub);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new UserNotFoundError();
     }
 
     await this.refreshTokenRepository.delete(payload.sub, payload.jti);
