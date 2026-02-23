@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user.response';
-import { ValidateUserUseCase } from '../../application/use-cases/ValidateUser.use-case';
+import { ValidateUserUseCase } from '../../application/use-cases/validate-user.use-case';
 
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(

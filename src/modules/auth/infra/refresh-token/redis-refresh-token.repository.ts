@@ -1,6 +1,6 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
-import { RefreshTokenRepository } from '../../domain/repositories/RefreshToken.repository';
+import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
 
 export class RedisRefreshTokenRepository implements RefreshTokenRepository {
   constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}

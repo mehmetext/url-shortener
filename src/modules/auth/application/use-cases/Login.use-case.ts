@@ -2,9 +2,9 @@ import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { IUserRepository } from 'src/modules/user/domain/repositories/IUserRepository';
-import { RefreshTokenRepository } from '../../domain/repositories/RefreshToken.repository';
-import { TokenGeneratorRepository } from '../../domain/repositories/TokenGeneratorRepository';
-import { LoginResponseDto } from '../dtos/Login.response';
+import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
+import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
+import { LoginResponseDto } from '../dtos/login.response';
 
 export class LoginUseCase {
   constructor(

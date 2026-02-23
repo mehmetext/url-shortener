@@ -1,10 +1,10 @@
 import { Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IUserRepository } from 'src/modules/user/domain/repositories/IUserRepository';
-import { RefreshTokenRepository } from '../../domain/repositories/RefreshToken.repository';
-import { TokenGeneratorRepository } from '../../domain/repositories/TokenGeneratorRepository';
-import { LoginResponseDto } from '../dtos/Login.response';
-import { LoginUseCase } from './Login.use-case';
+import { RefreshTokenRepository } from '../../domain/repositories/refresh-token.repository';
+import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
+import { LoginResponseDto } from '../dtos/login.response';
+import { LoginUseCase } from './login.use-case';
 
 export class RefreshTokenUseCase {
   constructor(

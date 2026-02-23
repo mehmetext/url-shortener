@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { StringValue } from 'ms';
-import { TokenGeneratorRepository } from '../../domain/repositories/TokenGeneratorRepository';
+import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
 
 export class JwtTokenGeneratorRepository implements TokenGeneratorRepository {
   constructor(private readonly jwtService: JwtService) {}

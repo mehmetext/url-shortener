@@ -5,7 +5,7 @@ import type { Request } from 'express';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user.response';
-import { LoginUseCase } from '../../application/use-cases/Login.use-case';
+import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { LoginDto } from '../dtos/login.dto';
 import { LoginResponseDto } from '../dtos/login.response';
 
