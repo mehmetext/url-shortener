@@ -1,9 +1,10 @@
+import { Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { StringValue } from 'ms';
 import { TokenGeneratorRepository } from '../../domain/repositories/token-generator.repository';
 
 export class JwtTokenGeneratorRepository implements TokenGeneratorRepository {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(@Inject(JwtService) private readonly jwtService: JwtService) {}
 
   async generateToken(
     payload: Record<string, any>,

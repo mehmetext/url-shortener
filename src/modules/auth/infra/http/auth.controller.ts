@@ -5,14 +5,13 @@ import type { Request } from 'express';
 import { CreateUserDto } from 'src/modules/user/application/dtos/create-user.dto';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
-import { UserResponseDto } from 'src/modules/user/infra/dtos/user.response';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
+import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginDto } from '../dtos/login.dto';
 import { LoginResponseDto } from '../dtos/login.response';
 import { RegisterDto } from '../dtos/register.dto';
-import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -25,19 +24,8 @@ export class AuthController {
   @Post('login')
   @ApiBody({ type: LoginDto })
   @ApiOkResponseGeneric(LoginResponseDto)
-  async login(
-    @Req() req: Request & { user: UserResponseDto },
-  ): Promise<LoginResponseDto> {
-    const user = new User(
-      req.user.id,
-      new EmailVO(req.user.email),
-      'password',
-      req.user.createdAt,
-      req.user.updatedAt,
-      req.user.deletedAt ?? undefined,
-    );
-
-    const response = await this.loginUseCase.execute(user);
+  async login(@Req() req: Request & { user: User }): Promise<LoginResponseDto> {
+    const response = await this.loginUseCase.execute(req.user);
 
     return {
       accessToken: response.accessToken,
