@@ -15,7 +15,7 @@ import { UrlVO } from '../../domain/value-objects/url.vo';
 import { ShortenUrlDto } from './dtos/shorten.dto';
 import { ShortenUrlResponse } from './dtos/shorten.response';
 
-@Controller('url')
+@Controller('urls')
 export class UrlController {
   constructor(
     private readonly shortenUrlUseCase: ShortenUrlUseCase,
