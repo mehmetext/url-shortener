@@ -2,10 +2,12 @@ import KeyvRedis, { Keyv } from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/infra/auth.module';
 import { UrlModule } from './modules/url/infra/url.module';
+import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
 import { PrismaModule } from './shared/modules/prisma/prisma.module';
 
 @Module({
@@ -31,6 +33,12 @@ import { PrismaModule } from './shared/modules/prisma/prisma.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
