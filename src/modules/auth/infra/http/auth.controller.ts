@@ -1,10 +1,19 @@
-import { Body, Controller, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { CreateUserCommand } from 'src/modules/user/application/dtos/create-user.command';
 import { User } from 'src/modules/user/domain/entities/user.entity';
 import { EmailVO } from 'src/modules/user/domain/value-objects/email.vo';
+import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
@@ -63,6 +72,20 @@ export class AuthController {
         updatedAt: user.user.updatedAt,
         deletedAt: user.user.deletedAt,
       },
+    };
+  }
+
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiOkResponseGeneric(UserResponseDto)
+  @UseGuards(AuthGuard('jwt'))
+  me(@Req() req: Request & { user: User }): UserResponseDto {
+    return {
+      id: req.user.id!,
+      email: req.user.email.value,
+      createdAt: req.user.createdAt,
+      updatedAt: req.user.updatedAt,
+      deletedAt: req.user.deletedAt,
     };
   }
 }
