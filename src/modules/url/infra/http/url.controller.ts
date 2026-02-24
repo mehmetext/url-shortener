@@ -100,8 +100,12 @@ export class UrlController {
   @ApiBearerAuth()
   @ApiOkResponseGeneric(ShortenUrlResponseDto, { isArray: true })
   @UseGuards(AuthGuard('jwt'))
-  async getAllShortenedUrls(): Promise<ShortenUrlResponseDto[]> {
-    const urls = await this.getAllShortenedUrlsUseCase.execute();
+  async getAllShortenedUrls(
+    @Req() req: Request & { user: UserResponseDto },
+  ): Promise<ShortenUrlResponseDto[]> {
+    const urls = await this.getAllShortenedUrlsUseCase.execute({
+      userId: req.user.id,
+    });
 
     return urls.map((url) => ({
       id: url.id!,

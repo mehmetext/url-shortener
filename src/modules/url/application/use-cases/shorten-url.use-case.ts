@@ -18,7 +18,7 @@ export class ShortenUrlUseCase {
       command.originalUrl,
       shortCode,
       command.expiresAt,
-      undefined,
+      command.userId,
       new Date(),
       new Date(),
       undefined,

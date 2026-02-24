@@ -94,6 +94,25 @@ export class PrismaUrlRepository implements UrlRepository {
     );
   }
 
+  async findAllByUserId(userId: string): Promise<Url[]> {
+    const result = await this.prisma.url.findMany({
+      where: { userId, deletedAt: null },
+    });
+
+    return result.map(
+      (result) =>
+        new Url(
+          result.id,
+          new UrlVO(result.originalUrl),
+          new ShortCodeVO(result.shortCode),
+          result.expiresAt ?? undefined,
+          userId,
+          result.createdAt,
+          result.updatedAt,
+          result.deletedAt ?? undefined,
+        ),
+    );
+  }
   async update(url: Url): Promise<Url> {
     const result = await this.prisma.url.update({
       where: { id: url.id, deletedAt: null },
