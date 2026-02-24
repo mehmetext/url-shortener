@@ -53,6 +53,7 @@ export class UrlController {
   }
 
   @Post('shorten')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @ApiCreatedResponseGeneric(ShortenUrlResponseDto)
   async shortenUrl(
