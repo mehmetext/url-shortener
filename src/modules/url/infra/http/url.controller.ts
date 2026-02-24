@@ -15,6 +15,7 @@ import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/get-all-shortened-urls.use-case';
+import { GetUrlDetailsByIdUseCase } from '../../application/use-cases/get-url-details-by-id.use-case';
 import { RedirectUrlUseCase } from '../../application/use-cases/redirect-url.use-case';
 import { ShortenUrlUseCase } from '../../application/use-cases/shorten-url.use-case';
 import { UrlVO } from '../../domain/value-objects/url.vo';
@@ -27,6 +28,7 @@ export class UrlController {
     private readonly shortenUrlUseCase: ShortenUrlUseCase,
     private readonly redirectUrlUseCase: RedirectUrlUseCase,
     private readonly getAllShortenedUrlsUseCase: GetAllShortenedUrlsUseCase,
+    private readonly getUrlDetailsByIdUseCase: GetUrlDetailsByIdUseCase,
   ) {}
 
   @Post('p-shorten')
@@ -117,5 +119,30 @@ export class UrlController {
       updatedAt: url.updatedAt,
       deletedAt: url.deletedAt,
     }));
+  }
+
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiOkResponseGeneric(ShortenUrlResponseDto)
+  @UseGuards(AuthGuard('jwt'))
+  async getUrlDetailsById(
+    @Param('id') id: string,
+  ): Promise<ShortenUrlResponseDto> {
+    const url = await this.getUrlDetailsByIdUseCase.execute({ id });
+
+    if (!url) {
+      throw new NotFoundException('URL not found');
+    }
+
+    return {
+      id: url.id!,
+      originalUrl: url.originalUrl.value,
+      shortCode: url.shortCode.value,
+      expiresAt: url.expiresAt,
+      userId: url.userId,
+      createdAt: url.createdAt,
+      updatedAt: url.updatedAt,
+      deletedAt: url.deletedAt,
+    };
   }
 }

@@ -53,13 +53,13 @@ export class PrismaUrlRepository implements UrlRepository {
     );
   }
 
-  async findById(id: string): Promise<Url> {
+  async findById(id: string): Promise<Url | null> {
     const result = await this.prisma.url.findUnique({
       where: { id, deletedAt: null },
     });
 
     if (!result) {
-      throw new UrlNotFoundError();
+      return null;
     }
 
     return new Url(

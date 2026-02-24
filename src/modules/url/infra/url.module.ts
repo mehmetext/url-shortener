@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GetAllShortenedUrlsUseCase } from '../application/use-cases/get-all-shortened-urls.use-case';
+import { GetUrlDetailsByIdUseCase } from '../application/use-cases/get-url-details-by-id.use-case';
 import { RedirectUrlUseCase } from '../application/use-cases/redirect-url.use-case';
 import { ShortenUrlUseCase } from '../application/use-cases/shorten-url.use-case';
 import { UrlRepository } from '../domain/repositories/url.repository';
@@ -17,6 +18,7 @@ import { UrlController } from './http/url.controller';
     ShortenUrlUseCase,
     RedirectUrlUseCase,
     GetAllShortenedUrlsUseCase,
+    GetUrlDetailsByIdUseCase,
   ],
 })
 export class UrlModule {}
