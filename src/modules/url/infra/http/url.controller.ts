@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   NotFoundException,
   Param,
   Post,
@@ -12,8 +14,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
+import { StatusCode } from 'src/shared/constants/http-response-codes';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
+import { DeleteUrlUseCase } from '../../application/use-cases/delete-url.use-case';
 import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/get-all-shortened-urls.use-case';
 import { GetUrlDetailsByIdUseCase } from '../../application/use-cases/get-url-details-by-id.use-case';
 import { RedirectUrlUseCase } from '../../application/use-cases/redirect-url.use-case';
@@ -29,6 +33,7 @@ export class UrlController {
     private readonly redirectUrlUseCase: RedirectUrlUseCase,
     private readonly getAllShortenedUrlsUseCase: GetAllShortenedUrlsUseCase,
     private readonly getUrlDetailsByIdUseCase: GetUrlDetailsByIdUseCase,
+    private readonly deleteUrlUseCase: DeleteUrlUseCase,
   ) {}
 
   @Post('p-shorten')
@@ -144,5 +149,13 @@ export class UrlController {
       updatedAt: url.updatedAt,
       deletedAt: url.deletedAt,
     };
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(StatusCode.NO_CONTENT)
+  async deleteUrl(@Param('id') id: string): Promise<void> {
+    await this.deleteUrlUseCase.execute({ id });
   }
 }
