@@ -17,9 +17,11 @@ import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
+import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
 import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginResponseDto } from '../dtos/login-response.dto';
 import { LoginDto } from '../dtos/login.dto';
+import { RefreshTokenDto } from '../dtos/refresh-token.dto';
 import { RegisterDto } from '../dtos/register.dto';
 
 @Controller('auth')
@@ -27,6 +29,8 @@ export class AuthController {
   constructor(
     @Inject(LoginUseCase) private readonly loginUseCase: LoginUseCase,
     @Inject(RegisterUseCase) private readonly registerUseCase: RegisterUseCase,
+    @Inject(RefreshTokenUseCase)
+    private readonly refreshTokenUseCase: RefreshTokenUseCase,
   ) {}
 
   @UseGuards(AuthGuard('local'))
@@ -86,6 +90,29 @@ export class AuthController {
       createdAt: req.user.createdAt,
       updatedAt: req.user.updatedAt,
       deletedAt: req.user.deletedAt,
+    };
+  }
+
+  @Post('refresh-token')
+  @ApiBearerAuth()
+  @ApiOkResponseGeneric(LoginResponseDto)
+  @UseGuards(AuthGuard('jwt'))
+  async refreshToken(@Body() body: RefreshTokenDto): Promise<LoginResponseDto> {
+    const refreshToken = await this.refreshTokenUseCase.execute(
+      body.refreshToken,
+    );
+
+    return {
+      accessToken: refreshToken.accessToken,
+      refreshToken: refreshToken.refreshToken,
+      expiresIn: refreshToken.expiresIn,
+      user: {
+        id: refreshToken.user.id!,
+        email: refreshToken.user.email.value,
+        createdAt: refreshToken.user.createdAt,
+        updatedAt: refreshToken.user.updatedAt,
+        deletedAt: refreshToken.user.deletedAt,
+      },
     };
   }
 }
