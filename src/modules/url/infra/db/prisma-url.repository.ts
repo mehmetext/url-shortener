@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
-import { UrlNotFoundError } from '../../application/errors';
 import { Url } from '../../domain/entities/url.entity';
+import { UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { UrlVO } from '../../domain/value-objects/url.vo';

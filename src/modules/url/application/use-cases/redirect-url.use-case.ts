@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { Url } from '../../domain/entities/url.entity';
+import { UrlExpiredError, UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
-import { UrlExpiredError, UrlNotFoundError } from '../errors';
 
 export class RedirectUrlUseCase {
   constructor(

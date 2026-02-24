@@ -12,3 +12,9 @@ export class UrlExpiredError extends DomainError {
     super(message, StatusCode.GONE);
   }
 }
+
+export class InvalidUrlError extends DomainError {
+  constructor(message = 'Invalid URL') {
+    super(message, StatusCode.BAD_REQUEST);
+  }
+}
