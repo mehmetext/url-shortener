@@ -6,10 +6,12 @@ import {
   Param,
   Post,
   Redirect,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
 import { ApiOkResponseGeneric } from 'src/shared/decorators/api-ok-response-generic.decorator';
 import { GetAllShortenedUrlsUseCase } from '../../application/use-cases/get-all-shortened-urls.use-case';
@@ -27,9 +29,9 @@ export class UrlController {
     private readonly getAllShortenedUrlsUseCase: GetAllShortenedUrlsUseCase,
   ) {}
 
-  @Post('shorten')
+  @Post('p-shorten')
   @ApiCreatedResponseGeneric(ShortenUrlResponseDto)
-  async shortenUrl(
+  async pShortenUrl(
     @Body() body: ShortenUrlDto,
   ): Promise<ShortenUrlResponseDto> {
     const url = new UrlVO(body.originalUrl);
@@ -37,6 +39,32 @@ export class UrlController {
     const result = await this.shortenUrlUseCase.execute({
       originalUrl: url,
       expiresAt: body.expiresAt,
+    });
+
+    return {
+      id: result.id!,
+      originalUrl: result.originalUrl.value,
+      shortCode: result.shortCode.value,
+      expiresAt: result.expiresAt,
+      userId: result.userId,
+      createdAt: result.createdAt,
+      updatedAt: result.updatedAt,
+    };
+  }
+
+  @Post('shorten')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiCreatedResponseGeneric(ShortenUrlResponseDto)
+  async shortenUrl(
+    @Req() req: Request & { user: UserResponseDto },
+    @Body() body: ShortenUrlDto,
+  ): Promise<ShortenUrlResponseDto> {
+    const url = new UrlVO(body.originalUrl);
+
+    const result = await this.shortenUrlUseCase.execute({
+      originalUrl: url,
+      expiresAt: body.expiresAt,
+      userId: req.user.id,
     });
 
     return {
