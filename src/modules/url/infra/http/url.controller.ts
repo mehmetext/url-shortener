@@ -7,12 +7,13 @@ import {
   NotFoundException,
   Param,
   Post,
-  Redirect,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import type { Response } from 'express';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 import { StatusCode } from 'src/shared/constants/http-response-codes';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
@@ -87,20 +88,17 @@ export class UrlController {
   }
 
   @Get(':shortCode')
-  @Redirect()
   async redirectUrl(
     @Param('shortCode') shortCode: string,
-  ): Promise<{ url: string; statusCode: number }> {
+    @Res() res: Response,
+  ) {
     const url = await this.redirectUrlUseCase.execute(shortCode);
 
     if (!url) {
       throw new NotFoundException('URL not found');
     }
 
-    return {
-      url: url.originalUrl.value,
-      statusCode: 302,
-    };
+    return res.redirect(302, url.originalUrl.value);
   }
 
   @Get()
