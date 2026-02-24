@@ -41,11 +41,11 @@ model Url {
 }
 
 model Click {
-  id        String @id @default(uuid())
+  id        String  @id @default(uuid())
   urlId     String
-  ipAddress String
-  country   String
-  userAgent String
+  ipAddress String?
+  country   String?
+  userAgent String?
 
   url Url @relation(fields: [urlId], references: [id])
 
