@@ -83,14 +83,8 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOkResponseGeneric(UserResponseDto)
   @UseGuards(AuthGuard('jwt'))
-  me(@Req() req: Request & { user: User }): UserResponseDto {
-    return {
-      id: req.user.id!,
-      email: req.user.email.value,
-      createdAt: req.user.createdAt,
-      updatedAt: req.user.updatedAt,
-      deletedAt: req.user.deletedAt,
-    };
+  me(@Req() req: Request & { user: UserResponseDto }): UserResponseDto {
+    return req.user;
   }
 
   @Post('refresh-token')
