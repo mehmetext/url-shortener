@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClickModule } from 'src/modules/click/infra/click.module';
+import { IpLocationModule } from 'src/shared/modules/ip-location/infra/ip-location.module';
 import { DeleteUrlUseCase } from '../application/use-cases/delete-url.use-case';
 import { GetAllShortenedUrlsUseCase } from '../application/use-cases/get-all-shortened-urls.use-case';
 import { GetUrlDetailsByIdUseCase } from '../application/use-cases/get-url-details-by-id.use-case';
@@ -11,7 +12,7 @@ import { UrlController } from './http/url.controller';
 
 @Module({
   controllers: [UrlController],
-  imports: [ClickModule],
+  imports: [ClickModule, IpLocationModule],
   providers: [
     {
       provide: UrlRepository,

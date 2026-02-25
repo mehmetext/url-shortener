@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { UserResponseDto } from 'src/modules/user/infra/dtos/user-response.dto';
 import { StatusCode } from 'src/shared/constants/http-response-codes';
 import { ApiCreatedResponseGeneric } from 'src/shared/decorators/api-created-response-generic.decorator';
@@ -92,8 +92,13 @@ export class UrlController {
   async redirectUrl(
     @Param('shortCode') shortCode: string,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
-    const url = await this.redirectUrlUseCase.execute(shortCode);
+    const url = await this.redirectUrlUseCase.execute({
+      shortCode,
+      ipAddress: req.ip,
+      userAgent: req.headers['user-agent'],
+    });
 
     if (!url) {
       throw new NotFoundException('URL not found');
