@@ -18,8 +18,16 @@ export class LoginUseCase {
     const jti = crypto.randomUUID();
     const payload = { sub: user.id, jti };
 
+    const isDevelopment =
+      this.configService.get<string>('NODE_ENV') === 'development';
+
+    const accessTokenExpiresIn = isDevelopment ? '15d' : '15m';
+    const accessTokenExpiresInSeconds = isDevelopment
+      ? 15 * 24 * 60 * 60
+      : 15 * 60;
+
     const accessToken = await this.tokenGenerator.generateToken(payload, {
-      expiresIn: '15m',
+      expiresIn: accessTokenExpiresIn,
       secret: this.configService.getOrThrow<string>('ACCESS_TOKEN_SECRET'),
     });
     const refreshToken = await this.tokenGenerator.generateToken(payload, {
@@ -37,7 +45,7 @@ export class LoginUseCase {
     return {
       accessToken,
       refreshToken,
-      expiresIn: 15 * 60,
+      expiresIn: accessTokenExpiresInSeconds,
       user,
     };
   }
