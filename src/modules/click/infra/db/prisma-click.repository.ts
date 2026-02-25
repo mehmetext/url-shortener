@@ -133,4 +133,12 @@ export class PrismaClickRepository implements ClickRepository {
       data: { deletedAt: new Date() },
     });
   }
+
+  async getCountByUrlId(urlId: string): Promise<number> {
+    const result = await this.prisma.click.count({
+      where: { urlId, deletedAt: null },
+    });
+
+    return result;
+  }
 }

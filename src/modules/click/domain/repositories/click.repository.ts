@@ -8,4 +8,5 @@ export abstract class ClickRepository {
   abstract findAllByUrlId(urlId: string): Promise<Click[]>;
   abstract update(click: Click): Promise<Click>;
   abstract delete(id: string): Promise<void>;
+  abstract getCountByUrlId(urlId: string): Promise<number>;
 }

@@ -24,6 +24,7 @@ import { GetUrlDetailsByIdUseCase } from '../../application/use-cases/get-url-de
 import { RedirectUrlUseCase } from '../../application/use-cases/redirect-url.use-case';
 import { ShortenUrlUseCase } from '../../application/use-cases/shorten-url.use-case';
 import { UrlVO } from '../../domain/value-objects/url.vo';
+import { ShortenUrlDetailResponseDto } from './dtos/shorten-url-detail-response.dto';
 import { ShortenUrlResponseDto } from './dtos/shorten-url-response.dto';
 import { ShortenUrlDto } from './dtos/shorten-url.dto';
 
@@ -124,13 +125,13 @@ export class UrlController {
     }));
   }
 
-  @Get(':id')
+  @Get('details/:id')
   @ApiBearerAuth()
-  @ApiOkResponseGeneric(ShortenUrlResponseDto)
+  @ApiOkResponseGeneric(ShortenUrlDetailResponseDto)
   @UseGuards(AuthGuard('jwt'))
   async getUrlDetailsById(
     @Param('id') id: string,
-  ): Promise<ShortenUrlResponseDto> {
+  ): Promise<ShortenUrlDetailResponseDto> {
     const url = await this.getUrlDetailsByIdUseCase.execute({ id });
 
     if (!url) {
@@ -138,14 +139,15 @@ export class UrlController {
     }
 
     return {
-      id: url.id!,
-      originalUrl: url.originalUrl.value,
-      shortCode: url.shortCode.value,
+      id: url.id,
+      originalUrl: url.originalUrl,
+      shortCode: url.shortCode,
       expiresAt: url.expiresAt,
       userId: url.userId,
       createdAt: url.createdAt,
       updatedAt: url.updatedAt,
       deletedAt: url.deletedAt,
+      clicks: url.clicks,
     };
   }
 
