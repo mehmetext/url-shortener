@@ -1,18 +1,14 @@
-import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject } from '@nestjs/common';
-import { CacheCount } from 'src/shared/utils/cache-count';
+import { Inject, Injectable } from '@nestjs/common';
+import { CacheCount } from 'src/shared/services/cache-count.service';
 import { ClickRepository } from '../../domain/repositories/click.repository';
 import { CLICK_COUNT_CACHE_KEY } from '../config/click-cache.config';
 
+@Injectable()
 export class GetClickCountUseCase {
-  private readonly cacheCount: CacheCount;
-
   constructor(
     @Inject(ClickRepository) private readonly clickRepository: ClickRepository,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-  ) {
-    this.cacheCount = new CacheCount(this.cacheManager);
-  }
+    @Inject(CacheCount) private readonly cacheCount: CacheCount,
+  ) {}
 
   async execute(urlId: string): Promise<number> {
     const cached = await this.cacheCount.get(CLICK_COUNT_CACHE_KEY(urlId));

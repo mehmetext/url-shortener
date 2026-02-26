@@ -1,10 +1,12 @@
-import { Cache } from '@nestjs/cache-manager';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable } from '@nestjs/common';
 import type { RedisClientType } from '@redis/client';
 
+@Injectable()
 export class CacheCount {
   private readonly store: { getClient: () => Promise<RedisClientType> };
 
-  constructor(private readonly cacheManager: Cache) {
+  constructor(@Inject(CACHE_MANAGER) private readonly cacheManager: Cache) {
     this.store = (
       this.cacheManager as {
         stores: { store: { getClient: () => Promise<RedisClientType> } }[];
