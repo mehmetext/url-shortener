@@ -3,6 +3,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -51,6 +52,7 @@ import { PrismaModule } from './shared/modules/prisma/prisma.module';
         },
       ],
     }),
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [

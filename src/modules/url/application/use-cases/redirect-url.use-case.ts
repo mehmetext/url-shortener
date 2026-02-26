@@ -1,5 +1,6 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateClickUseCase } from 'src/modules/click/application/use-cases/create-click.use-case';
 import { FindByIpAddressUseCase } from 'src/shared/modules/ip-location/application/use-cases/find-by-ip-address.use-case';
 import { Url, UrlPrimitives } from '../../domain/entities/url.entity';
@@ -20,6 +21,7 @@ export class RedirectUrlUseCase {
     @Inject(FindByIpAddressUseCase)
     private readonly findByIpAddressUseCase: FindByIpAddressUseCase,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(command: RedirectUrlCommand): Promise<Url> {
@@ -58,14 +60,9 @@ export class RedirectUrlUseCase {
       throw new UrlExpiredError();
     }
 
-    const ipLocation = command.ipAddress
-      ? await this.findByIpAddressUseCase.execute(command.ipAddress)
-      : null;
-
-    await this.createClickUseCase.execute({
+    this.eventEmitter.emit('click.created', {
       urlId: url.id!,
       ipAddress: command.ipAddress,
-      country: ipLocation?.country ?? undefined,
       userAgent: command.userAgent,
     });
 
