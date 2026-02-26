@@ -27,12 +27,14 @@ export class ShortenUrlUseCase {
       undefined,
     );
 
+    const created = await this.urlRepository.create(url);
+
     await this.cacheManager.set(
-      URL_CACHE_KEY(url.shortCode.value),
-      url.toPrimitives(),
+      URL_CACHE_KEY(created.shortCode.value),
+      created.toPrimitives(),
       URL_CACHE_TTL_MS,
     );
 
-    return this.urlRepository.create(url);
+    return created;
   }
 }
