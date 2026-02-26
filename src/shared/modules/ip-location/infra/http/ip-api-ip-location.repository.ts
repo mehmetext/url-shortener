@@ -16,6 +16,6 @@ export class IpApiIpLocationRepository implements IpLocationRepository {
 
     const response = await firstValueFrom(response$);
 
-    return new IpLocation(response.data.query, response.data.countryCode);
+    return new IpLocation(response.data.countryCode);
   }
 }

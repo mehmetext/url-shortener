@@ -1,7 +1,8 @@
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
 import { CreateClickUseCase } from 'src/modules/click/application/use-cases/create-click.use-case';
 import { FindByIpAddressUseCase } from 'src/shared/modules/ip-location/application/use-cases/find-by-ip-address.use-case';
-import { Url } from '../../domain/entities/url.entity';
+import { Url, UrlPrimitives } from '../../domain/entities/url.entity';
 import { UrlExpiredError, UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
 import { RedirectUrlCommand } from '../dtos/redirect-url.command';
@@ -13,17 +14,33 @@ export class RedirectUrlUseCase {
     private readonly createClickUseCase: CreateClickUseCase,
     @Inject(FindByIpAddressUseCase)
     private readonly findByIpAddressUseCase: FindByIpAddressUseCase,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async execute(command: RedirectUrlCommand): Promise<Url> {
-    const url = await this.urlRepository.findByShortCode(command.shortCode);
+    const cacheKey = `url:${command.shortCode}`;
+    const cached = await this.cacheManager.get<UrlPrimitives>(cacheKey);
 
-    if (!url) {
-      throw new UrlNotFoundError();
-    }
+    let url: Url | null = null;
 
-    if (url.isExpired()) {
-      throw new UrlExpiredError();
+    if (cached) {
+      url = Url.fromPrimitives(cached);
+    } else {
+      url = await this.urlRepository.findByShortCode(command.shortCode);
+
+      if (!url) {
+        throw new UrlNotFoundError();
+      }
+
+      if (url.isExpired()) {
+        throw new UrlExpiredError();
+      }
+
+      await this.cacheManager.set(
+        cacheKey,
+        url.toPrimitives(),
+        60 * 60 * 24 * 30,
+      );
     }
 
     const ipLocation = command.ipAddress
