@@ -41,6 +41,6 @@ The application is structured as a **Modular Monolith**, divided into clearly de
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/url-shortener.git
+   git clone https://github.com/mehmetext/url-shortener.git
    cd url-shortener
    ```
