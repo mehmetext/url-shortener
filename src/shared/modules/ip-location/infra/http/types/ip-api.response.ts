@@ -1,5 +1,11 @@
-export interface IpApiResponse {
-  status: string;
+interface IpApiBaseResponse {
+  status: 'success' | 'fail';
+  query: string;
+  message?: string;
+}
+
+export interface IpApiSuccessResponse extends IpApiBaseResponse {
+  status: 'success';
   country: string;
   countryCode: string;
   region: string;
@@ -12,5 +18,10 @@ export interface IpApiResponse {
   isp: string;
   org: string;
   as: string;
-  query: string;
 }
+
+export interface IpApiFailResponse extends IpApiBaseResponse {
+  status: 'fail';
+}
+
+export type IpApiResponse = IpApiSuccessResponse | IpApiFailResponse;
