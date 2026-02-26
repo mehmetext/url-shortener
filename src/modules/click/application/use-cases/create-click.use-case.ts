@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+import { UrlRedirectedEvent } from 'src/modules/url/domain/events/url-redirected.event';
 import { FindByIpAddressUseCase } from 'src/shared/modules/ip-location/application/use-cases/find-by-ip-address.use-case';
 import { CacheCount } from 'src/shared/services/cache-count.service';
 import { Click } from '../../domain/entities/click.entity';
 import { ClickRepository } from '../../domain/repositories/click.repository';
 import { CLICK_COUNT_CACHE_KEY } from '../config/click-cache.config';
-import { CreateClickCommand } from '../dtos/create-click.command';
 
 @Injectable()
 export class CreateClickUseCase {
@@ -17,25 +17,25 @@ export class CreateClickUseCase {
   ) {}
 
   @OnEvent('click.created')
-  async execute(command: CreateClickCommand): Promise<Click> {
-    const ipLocation = command.ipAddress
-      ? await this.findByIpAddressUseCase.execute(command.ipAddress)
+  async execute(event: UrlRedirectedEvent): Promise<Click> {
+    const ipLocation = event.ipAddress
+      ? await this.findByIpAddressUseCase.execute(event.ipAddress)
       : null;
 
     const click = await this.clickRepository.create({
-      ...command,
+      ...event,
       country: ipLocation?.country ?? undefined,
     });
 
     const cached = await this.cacheCount.get(
-      CLICK_COUNT_CACHE_KEY(command.urlId),
+      CLICK_COUNT_CACHE_KEY(event.urlId),
     );
 
     if (!cached) {
-      const count = await this.clickRepository.getCountByUrlId(command.urlId);
-      await this.cacheCount.set(CLICK_COUNT_CACHE_KEY(command.urlId), count);
+      const count = await this.clickRepository.getCountByUrlId(event.urlId);
+      await this.cacheCount.set(CLICK_COUNT_CACHE_KEY(event.urlId), count);
     } else {
-      await this.cacheCount.increment(CLICK_COUNT_CACHE_KEY(command.urlId));
+      await this.cacheCount.increment(CLICK_COUNT_CACHE_KEY(event.urlId));
     }
 
     return click;

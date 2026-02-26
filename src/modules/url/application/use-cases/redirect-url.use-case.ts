@@ -3,6 +3,7 @@ import { Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Url, UrlPrimitives } from '../../domain/entities/url.entity';
 import { UrlExpiredError, UrlNotFoundError } from '../../domain/errors';
+import { UrlRedirectedEvent } from '../../domain/events/url-redirected.event';
 import { UrlRepository } from '../../domain/repositories/url.repository';
 import {
   URL_CACHE_KEY,
@@ -55,11 +56,10 @@ export class RedirectUrlUseCase {
       throw new UrlExpiredError();
     }
 
-    this.eventEmitter.emit('click.created', {
-      urlId: url.id!,
-      ipAddress: command.ipAddress,
-      userAgent: command.userAgent,
-    });
+    this.eventEmitter.emit(
+      'click.created',
+      new UrlRedirectedEvent(url.id!, command.ipAddress, command.userAgent),
+    );
 
     return url;
   }
