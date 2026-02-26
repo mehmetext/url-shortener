@@ -19,28 +19,39 @@ export class RedirectUrlUseCase {
 
   async execute(command: RedirectUrlCommand): Promise<Url> {
     const cacheKey = `url:${command.shortCode}`;
-    const cached = await this.cacheManager.get<UrlPrimitives>(cacheKey);
+    const cached = await this.cacheManager.get<
+      UrlPrimitives | { notFound: true }
+    >(cacheKey);
 
     let url: Url | null = null;
 
     if (cached) {
+      if ('notFound' in cached) {
+        throw new UrlNotFoundError();
+      }
+
       url = Url.fromPrimitives(cached);
     } else {
       url = await this.urlRepository.findByShortCode(command.shortCode);
 
       if (!url) {
+        await this.cacheManager.set(
+          cacheKey,
+          { notFound: true },
+          1000 * 60 * 5,
+        );
         throw new UrlNotFoundError();
-      }
-
-      if (url.isExpired()) {
-        throw new UrlExpiredError();
       }
 
       await this.cacheManager.set(
         cacheKey,
         url.toPrimitives(),
-        60 * 60 * 24 * 30,
+        1000 * 60 * 60 * 24 * 30,
       );
+    }
+
+    if (url.isExpired()) {
+      throw new UrlExpiredError();
     }
 
     const ipLocation = command.ipAddress

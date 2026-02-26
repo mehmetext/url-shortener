@@ -16,25 +16,31 @@ export class FindByIpAddressUseCase {
 
   async execute(ipAddress: string): Promise<IpLocation | null> {
     const cacheKey = `ip-location:${ipAddress}`;
-    const cached = await this.cacheManager.get<IpLocationPrimitives>(cacheKey);
-
-    let ipLocation: IpLocation | null = null;
+    const cached = await this.cacheManager.get<
+      IpLocationPrimitives | { notFound: true }
+    >(cacheKey);
 
     if (cached) {
-      ipLocation = IpLocation.fromPrimitives(cached);
-    } else {
-      ipLocation = await this.ipLocationRepository.findByIpAddress(ipAddress);
-
-      if (ipLocation) {
-        await this.cacheManager.set(
-          cacheKey,
-          ipLocation.toPrimitives(),
-          60 * 60 * 24 * 30,
-        );
-      } else {
-        await this.cacheManager.set(cacheKey, null, 60 * 60 * 24 * 30);
+      if ('notFound' in cached) {
+        return null;
       }
+
+      return IpLocation.fromPrimitives(cached);
     }
+
+    const ipLocation =
+      await this.ipLocationRepository.findByIpAddress(ipAddress);
+
+    if (!ipLocation) {
+      await this.cacheManager.set(cacheKey, { notFound: true }, 1000 * 60 * 5);
+      return null;
+    }
+
+    await this.cacheManager.set(
+      cacheKey,
+      ipLocation.toPrimitives(),
+      1000 * 60 * 60 * 24 * 30,
+    );
 
     return ipLocation;
   }
