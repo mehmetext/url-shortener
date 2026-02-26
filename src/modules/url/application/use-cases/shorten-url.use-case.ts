@@ -1,13 +1,16 @@
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import { Url } from '../../domain/entities/url.entity';
 import { UrlRepository } from '../../domain/repositories/url.repository';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
+import { URL_CACHE_KEY, URL_CACHE_TTL_MS } from '../config/url-cache.config';
 import { ShortenUrlCommand } from '../dtos/shorten-url.command';
 
 export class ShortenUrlUseCase {
   constructor(
     @Inject(UrlRepository) private readonly urlRepository: UrlRepository,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async execute(command: ShortenUrlCommand): Promise<Url> {
@@ -22,6 +25,12 @@ export class ShortenUrlUseCase {
       new Date(),
       new Date(),
       undefined,
+    );
+
+    await this.cacheManager.set(
+      URL_CACHE_KEY(url.shortCode.value),
+      url.toPrimitives(),
+      URL_CACHE_TTL_MS,
     );
 
     return this.urlRepository.create(url);
