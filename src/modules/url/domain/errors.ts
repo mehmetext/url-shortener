@@ -18,3 +18,9 @@ export class InvalidUrlError extends DomainError {
     super(message, StatusCode.BAD_REQUEST);
   }
 }
+
+export class ShortCodeGenerationFailedError extends DomainError {
+  constructor(message = 'Failed to generate a unique short code') {
+    super(message, StatusCode.INTERNAL_SERVER_ERROR);
+  }
+}

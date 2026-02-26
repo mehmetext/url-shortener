@@ -2,6 +2,7 @@ import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
 import { nanoid } from 'nanoid';
 import { Url } from '../../domain/entities/url.entity';
+import { ShortCodeGenerationFailedError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { URL_CACHE_KEY, URL_CACHE_TTL_MS } from '../config/url-cache.config';
@@ -14,12 +15,27 @@ export class ShortenUrlUseCase {
   ) {}
 
   async execute(command: ShortenUrlCommand): Promise<Url> {
-    const shortCode = new ShortCodeVO(nanoid(6));
+    let shortCode: ShortCodeVO;
+    let isUnique = false;
+    let retryCount = 0;
+
+    while (!isUnique && retryCount < 3) {
+      shortCode = new ShortCodeVO(nanoid(6));
+      const existing = await this.urlRepository.findByShortCode(
+        shortCode.value,
+      );
+      if (!existing) isUnique = true;
+      retryCount++;
+    }
+
+    if (!isUnique) {
+      throw new ShortCodeGenerationFailedError();
+    }
 
     const url = new Url(
       undefined,
       command.originalUrl,
-      shortCode,
+      shortCode!,
       command.expiresAt,
       command.userId,
       new Date(),

@@ -32,13 +32,13 @@ export class PrismaUrlRepository implements UrlRepository {
     );
   }
 
-  async findByShortCode(shortCode: string): Promise<Url> {
+  async findByShortCode(shortCode: string): Promise<Url | null> {
     const result = await this.prisma.url.findUnique({
       where: { shortCode, deletedAt: null },
     });
 
     if (!result) {
-      throw new UrlNotFoundError();
+      return null;
     }
 
     return new Url(
