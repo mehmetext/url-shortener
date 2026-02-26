@@ -5,6 +5,11 @@ import { FindByIpAddressUseCase } from 'src/shared/modules/ip-location/applicati
 import { Url, UrlPrimitives } from '../../domain/entities/url.entity';
 import { UrlExpiredError, UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
+import {
+  URL_CACHE_KEY,
+  URL_CACHE_NOT_FOUND_TTL_MS,
+  URL_CACHE_TTL_MS,
+} from '../config/url-cache.config';
 import { RedirectUrlCommand } from '../dtos/redirect-url.command';
 
 export class RedirectUrlUseCase {
@@ -18,10 +23,9 @@ export class RedirectUrlUseCase {
   ) {}
 
   async execute(command: RedirectUrlCommand): Promise<Url> {
-    const cacheKey = `url:${command.shortCode}`;
     const cached = await this.cacheManager.get<
       UrlPrimitives | { notFound: true }
-    >(cacheKey);
+    >(URL_CACHE_KEY(command.shortCode));
 
     let url: Url | null = null;
 
@@ -36,17 +40,17 @@ export class RedirectUrlUseCase {
 
       if (!url) {
         await this.cacheManager.set(
-          cacheKey,
+          URL_CACHE_KEY(command.shortCode),
           { notFound: true },
-          1000 * 60 * 5,
+          URL_CACHE_NOT_FOUND_TTL_MS,
         );
         throw new UrlNotFoundError();
       }
 
       await this.cacheManager.set(
-        cacheKey,
+        URL_CACHE_KEY(command.shortCode),
         url.toPrimitives(),
-        1000 * 60 * 60 * 24 * 30,
+        URL_CACHE_TTL_MS,
       );
     }
 
