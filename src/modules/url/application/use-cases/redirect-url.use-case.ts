@@ -1,8 +1,6 @@
 import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CreateClickUseCase } from 'src/modules/click/application/use-cases/create-click.use-case';
-import { FindByIpAddressUseCase } from 'src/shared/modules/ip-location/application/use-cases/find-by-ip-address.use-case';
 import { Url, UrlPrimitives } from '../../domain/entities/url.entity';
 import { UrlExpiredError, UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
@@ -16,11 +14,8 @@ import { RedirectUrlCommand } from '../dtos/redirect-url.command';
 export class RedirectUrlUseCase {
   constructor(
     @Inject(UrlRepository) private readonly urlRepository: UrlRepository,
-    @Inject(CreateClickUseCase)
-    private readonly createClickUseCase: CreateClickUseCase,
-    @Inject(FindByIpAddressUseCase)
-    private readonly findByIpAddressUseCase: FindByIpAddressUseCase,
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
   ) {}
 
