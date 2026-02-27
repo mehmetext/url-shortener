@@ -3,8 +3,7 @@ import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
 import { Url } from '../../domain/entities/url.entity';
 import { UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
-import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
-import { UrlVO } from '../../domain/value-objects/url.vo';
+import { UrlPrismaMapper } from './url-prisma.mapper';
 
 @Injectable()
 export class PrismaUrlRepository implements UrlRepository {
@@ -12,24 +11,10 @@ export class PrismaUrlRepository implements UrlRepository {
 
   async create(url: Url): Promise<Url> {
     const result = await this.prisma.url.create({
-      data: {
-        originalUrl: url.originalUrl.value,
-        shortCode: url.shortCode.value,
-        userId: url.userId,
-        expiresAt: url.expiresAt,
-      },
+      data: UrlPrismaMapper.toCreatePersistence(url),
     });
 
-    return new Url(
-      result.id,
-      new UrlVO(result.originalUrl),
-      new ShortCodeVO(result.shortCode),
-      result.expiresAt ?? undefined,
-      result.userId ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return UrlPrismaMapper.toDomain(result);
   }
 
   async findByShortCode(shortCode: string): Promise<Url | null> {
@@ -41,16 +26,7 @@ export class PrismaUrlRepository implements UrlRepository {
       return null;
     }
 
-    return new Url(
-      result.id,
-      new UrlVO(result.originalUrl),
-      new ShortCodeVO(result.shortCode),
-      result.expiresAt ?? undefined,
-      result.userId ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return UrlPrismaMapper.toDomain(result);
   }
 
   async findById(id: string): Promise<Url | null> {
@@ -62,16 +38,7 @@ export class PrismaUrlRepository implements UrlRepository {
       return null;
     }
 
-    return new Url(
-      result.id,
-      new UrlVO(result.originalUrl),
-      new ShortCodeVO(result.shortCode),
-      result.expiresAt ?? undefined,
-      result.userId ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return UrlPrismaMapper.toDomain(result);
   }
 
   async findAll(): Promise<Url[]> {
@@ -79,19 +46,7 @@ export class PrismaUrlRepository implements UrlRepository {
       where: { deletedAt: null },
     });
 
-    return result.map(
-      (result) =>
-        new Url(
-          result.id,
-          new UrlVO(result.originalUrl),
-          new ShortCodeVO(result.shortCode),
-          result.expiresAt ?? undefined,
-          result.userId ?? undefined,
-          result.createdAt,
-          result.updatedAt,
-          result.deletedAt ?? undefined,
-        ),
-    );
+    return result.map((result) => UrlPrismaMapper.toDomain(result));
   }
 
   async findAllByUserId(userId: string): Promise<Url[]> {
@@ -99,45 +54,19 @@ export class PrismaUrlRepository implements UrlRepository {
       where: { userId, deletedAt: null },
     });
 
-    return result.map(
-      (result) =>
-        new Url(
-          result.id,
-          new UrlVO(result.originalUrl),
-          new ShortCodeVO(result.shortCode),
-          result.expiresAt ?? undefined,
-          userId,
-          result.createdAt,
-          result.updatedAt,
-          result.deletedAt ?? undefined,
-        ),
-    );
+    return result.map((result) => UrlPrismaMapper.toDomain(result));
   }
   async update(url: Url): Promise<Url> {
     const result = await this.prisma.url.update({
       where: { id: url.id, deletedAt: null },
-      data: {
-        originalUrl: url.originalUrl.value,
-        shortCode: url.shortCode.value,
-        expiresAt: url.expiresAt,
-        userId: url.userId,
-      },
+      data: UrlPrismaMapper.toUpdatePersistence(url),
     });
 
     if (!result) {
       throw new UrlNotFoundError();
     }
 
-    return new Url(
-      result.id,
-      new UrlVO(result.originalUrl),
-      new ShortCodeVO(result.shortCode),
-      result.expiresAt ?? undefined,
-      result.userId ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return UrlPrismaMapper.toDomain(result);
   }
 
   async delete(id: string): Promise<void> {

@@ -32,6 +32,24 @@ export class Url {
     return !!this.deletedAt;
   }
 
+  static create(params: {
+    originalUrl: UrlVO;
+    shortCode: ShortCodeVO;
+    expiresAt: Date | undefined;
+    userId: string | undefined;
+  }): Url {
+    return new Url(
+      undefined,
+      params.originalUrl,
+      params.shortCode,
+      params.expiresAt,
+      params.userId,
+      new Date(),
+      new Date(),
+      undefined,
+    );
+  }
+
   toPrimitives(): UrlPrimitives {
     return {
       id: this.id,

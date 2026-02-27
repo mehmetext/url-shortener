@@ -45,20 +45,10 @@ export class UrlController {
   ): Promise<ShortenUrlResponseDto> {
     const url = new UrlVO(body.originalUrl);
 
-    const result = await this.shortenUrlUseCase.execute({
+    return this.shortenUrlUseCase.execute({
       originalUrl: url,
       expiresAt: body.expiresAt,
     });
-
-    return {
-      id: result.id!,
-      originalUrl: result.originalUrl.value,
-      shortCode: result.shortCode.value,
-      expiresAt: result.expiresAt,
-      userId: result.userId,
-      createdAt: result.createdAt,
-      updatedAt: result.updatedAt,
-    };
   }
 
   @Post('shorten')
@@ -77,15 +67,7 @@ export class UrlController {
       userId: req.user.id,
     });
 
-    return {
-      id: result.id!,
-      originalUrl: result.originalUrl.value,
-      shortCode: result.shortCode.value,
-      expiresAt: result.expiresAt,
-      userId: result.userId,
-      createdAt: result.createdAt,
-      updatedAt: result.updatedAt,
-    };
+    return result;
   }
 
   @Get(':shortCode')
@@ -114,20 +96,9 @@ export class UrlController {
   async getAllShortenedUrls(
     @Req() req: Request & { user: UserResponseDto },
   ): Promise<ShortenUrlResponseDto[]> {
-    const urls = await this.getAllShortenedUrlsUseCase.execute({
+    return this.getAllShortenedUrlsUseCase.execute({
       userId: req.user.id,
     });
-
-    return urls.map((url) => ({
-      id: url.id!,
-      originalUrl: url.originalUrl.value,
-      shortCode: url.shortCode.value,
-      expiresAt: url.expiresAt,
-      userId: url.userId,
-      createdAt: url.createdAt,
-      updatedAt: url.updatedAt,
-      deletedAt: url.deletedAt,
-    }));
   }
 
   @Get('details/:id')
@@ -143,17 +114,7 @@ export class UrlController {
       throw new NotFoundException('URL not found');
     }
 
-    return {
-      id: url.id,
-      originalUrl: url.originalUrl,
-      shortCode: url.shortCode,
-      expiresAt: url.expiresAt,
-      userId: url.userId,
-      createdAt: url.createdAt,
-      updatedAt: url.updatedAt,
-      deletedAt: url.deletedAt,
-      clicks: url.clicks,
-    };
+    return url;
   }
 
   @Delete(':id')

@@ -7,6 +7,7 @@ import { UrlRepository } from '../../domain/repositories/url.repository';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { URL_CACHE_KEY, URL_CACHE_TTL_MS } from '../config/url-cache.config';
 import { ShortenUrlCommand } from '../dtos/shorten-url.command';
+import { ShortenUrlResult } from '../dtos/shorten-url.result';
 
 export class ShortenUrlUseCase {
   constructor(
@@ -14,7 +15,7 @@ export class ShortenUrlUseCase {
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
-  async execute(command: ShortenUrlCommand): Promise<Url> {
+  async execute(command: ShortenUrlCommand): Promise<ShortenUrlResult> {
     let shortCode: ShortCodeVO;
     let isUnique = false;
     let retryCount = 0;
@@ -32,16 +33,12 @@ export class ShortenUrlUseCase {
       throw new ShortCodeGenerationFailedError();
     }
 
-    const url = new Url(
-      undefined,
-      command.originalUrl,
-      shortCode!,
-      command.expiresAt,
-      command.userId,
-      new Date(),
-      new Date(),
-      undefined,
-    );
+    const url = Url.create({
+      originalUrl: command.originalUrl,
+      shortCode: shortCode!,
+      expiresAt: command.expiresAt,
+      userId: command.userId,
+    });
 
     const created = await this.urlRepository.create(url);
 
@@ -51,6 +48,14 @@ export class ShortenUrlUseCase {
       URL_CACHE_TTL_MS,
     );
 
-    return created;
+    return {
+      id: created.id!,
+      originalUrl: created.originalUrl.value,
+      shortCode: created.shortCode.value,
+      expiresAt: created.expiresAt,
+      userId: created.userId,
+      createdAt: created.createdAt,
+      updatedAt: created.updatedAt,
+    };
   }
 }
