@@ -6,6 +6,7 @@ import { User } from '../../domain/entities/user.entity';
 import { UserNotFoundError } from '../../domain/errors';
 import { UserRepository } from '../../domain/repositories/user.repository';
 import { EmailVO } from '../../domain/value-objects/email.vo';
+import { PrismaUserMapper } from './prisma-user.mapper';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -27,14 +28,7 @@ export class PrismaUserRepository implements UserRepository {
       },
     });
 
-    return new User(
-      created.id,
-      new EmailVO(created.email),
-      created.password,
-      created.createdAt,
-      created.updatedAt,
-      created.deletedAt ?? undefined,
-    );
+    return PrismaUserMapper.toDomain(created);
   }
 
   async findByEmail(email: EmailVO): Promise<User> {
@@ -42,14 +36,7 @@ export class PrismaUserRepository implements UserRepository {
       where: { email: email.value },
     });
     if (!user) throw new UserNotFoundError();
-    return new User(
-      user.id,
-      new EmailVO(user.email),
-      user.password,
-      user.createdAt,
-      user.updatedAt,
-      user.deletedAt ?? undefined,
-    );
+    return PrismaUserMapper.toDomain(user);
   }
 
   async findById(id: string): Promise<User | null> {
@@ -58,14 +45,7 @@ export class PrismaUserRepository implements UserRepository {
     });
     if (!user) return null;
 
-    return new User(
-      user.id,
-      new EmailVO(user.email),
-      user.password,
-      user.createdAt,
-      user.updatedAt,
-      user.deletedAt ?? undefined,
-    );
+    return PrismaUserMapper.toDomain(user);
   }
 
   async update(user: User): Promise<User> {
@@ -83,14 +63,7 @@ export class PrismaUserRepository implements UserRepository {
       },
     });
 
-    return new User(
-      updated.id,
-      new EmailVO(updated.email),
-      updated.password,
-      updated.createdAt,
-      updated.updatedAt,
-      updated.deletedAt ?? undefined,
-    );
+    return PrismaUserMapper.toDomain(updated);
   }
 
   async delete(id: string): Promise<void> {
