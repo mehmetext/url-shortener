@@ -86,7 +86,7 @@ export class UrlController {
       throw new NotFoundException('URL not found');
     }
 
-    return res.redirect(302, url.originalUrl.value);
+    return res.redirect(302, url.originalUrl);
   }
 
   @Get()

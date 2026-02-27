@@ -11,6 +11,7 @@ import {
   URL_CACHE_TTL_MS,
 } from '../config/url-cache.config';
 import { RedirectUrlCommand } from '../dtos/redirect-url.command';
+import { ShortenUrlResult } from '../dtos/shorten-url.result';
 
 export class RedirectUrlUseCase {
   constructor(
@@ -20,7 +21,7 @@ export class RedirectUrlUseCase {
     @Inject(EventEmitter2) private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async execute(command: RedirectUrlCommand): Promise<Url> {
+  async execute(command: RedirectUrlCommand): Promise<ShortenUrlResult> {
     const cached = await this.cacheManager.get<
       UrlPrimitives | { notFound: true }
     >(URL_CACHE_KEY(command.shortCode));
@@ -61,6 +62,14 @@ export class RedirectUrlUseCase {
       new UrlRedirectedEvent(url.id!, command.ipAddress, command.userAgent),
     );
 
-    return url;
+    return {
+      id: url.id!,
+      originalUrl: url.originalUrl.value,
+      shortCode: url.shortCode.value,
+      expiresAt: url.expiresAt,
+      userId: url.userId,
+      createdAt: url.createdAt,
+      updatedAt: url.updatedAt,
+    };
   }
 }
