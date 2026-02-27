@@ -9,4 +9,22 @@ export class Click {
     public readonly updatedAt: Date,
     public readonly deletedAt: Date | undefined,
   ) {}
+
+  static create(params: {
+    urlId: string;
+    ipAddress: string | undefined;
+    country: string | undefined;
+    userAgent: string | undefined;
+  }): Click {
+    return new Click(
+      undefined,
+      params.urlId,
+      params.ipAddress,
+      params.country,
+      params.userAgent,
+      new Date(),
+      new Date(),
+      undefined,
+    );
+  }
 }

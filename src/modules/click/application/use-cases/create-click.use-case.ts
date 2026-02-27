@@ -17,15 +17,19 @@ export class CreateClickUseCase {
   ) {}
 
   @OnEvent('click.created')
-  async execute(event: UrlRedirectedEvent): Promise<Click> {
+  async execute(event: UrlRedirectedEvent): Promise<void> {
     const ipLocation = event.ipAddress
       ? await this.findByIpAddressUseCase.execute(event.ipAddress)
       : null;
 
-    const click = await this.clickRepository.create({
-      ...event,
+    const click = Click.create({
+      urlId: event.urlId,
+      ipAddress: event.ipAddress,
       country: ipLocation?.country ?? undefined,
+      userAgent: event.userAgent,
     });
+
+    await this.clickRepository.create(click);
 
     const cached = await this.cacheCount.get(
       CLICK_COUNT_CACHE_KEY(event.urlId),
@@ -37,7 +41,5 @@ export class CreateClickUseCase {
     } else {
       await this.cacheCount.increment(CLICK_COUNT_CACHE_KEY(event.urlId));
     }
-
-    return click;
   }
 }

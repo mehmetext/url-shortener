@@ -1,34 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
-import { CreateClickCommand } from '../../application/dtos/create-click.command';
 import { Click } from '../../domain/entities/click.entity';
 import { ClickNotFoundError } from '../../domain/errors';
 import { ClickRepository } from '../../domain/repositories/click.repository';
+import { PrismaClickMapper } from './prisma-click.mapper';
 
 @Injectable()
 export class PrismaClickRepository implements ClickRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(command: CreateClickCommand): Promise<Click> {
+  async create(click: Click): Promise<Click> {
     const result = await this.prisma.click.create({
-      data: {
-        urlId: command.urlId,
-        ipAddress: command.ipAddress,
-        country: command.country,
-        userAgent: command.userAgent,
-      },
+      data: PrismaClickMapper.toCreatePersistence(click),
     });
 
-    return new Click(
-      result.id,
-      result.urlId,
-      result.ipAddress ?? undefined,
-      result.country ?? undefined,
-      result.userAgent ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return PrismaClickMapper.toDomain(result);
   }
 
   async findById(id: string): Promise<Click | null> {
@@ -40,16 +26,7 @@ export class PrismaClickRepository implements ClickRepository {
       return null;
     }
 
-    return new Click(
-      result.id,
-      result.urlId,
-      result.ipAddress ?? undefined,
-      result.country ?? undefined,
-      result.userAgent ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return PrismaClickMapper.toDomain(result);
   }
 
   async findAll(): Promise<Click[]> {
@@ -57,19 +34,7 @@ export class PrismaClickRepository implements ClickRepository {
       where: { deletedAt: null },
     });
 
-    return result.map(
-      (row) =>
-        new Click(
-          row.id,
-          row.urlId,
-          row.ipAddress ?? undefined,
-          row.country ?? undefined,
-          row.userAgent ?? undefined,
-          row.createdAt,
-          row.updatedAt,
-          row.deletedAt ?? undefined,
-        ),
-    );
+    return result.map((row) => PrismaClickMapper.toDomain(row));
   }
 
   async findAllByUrlId(urlId: string): Promise<Click[]> {
@@ -77,19 +42,7 @@ export class PrismaClickRepository implements ClickRepository {
       where: { urlId, deletedAt: null },
     });
 
-    return result.map(
-      (row) =>
-        new Click(
-          row.id,
-          row.urlId,
-          row.ipAddress ?? undefined,
-          row.country ?? undefined,
-          row.userAgent ?? undefined,
-          row.createdAt,
-          row.updatedAt,
-          row.deletedAt ?? undefined,
-        ),
-    );
+    return result.map((row) => PrismaClickMapper.toDomain(row));
   }
 
   async update(click: Click): Promise<Click> {
@@ -107,24 +60,10 @@ export class PrismaClickRepository implements ClickRepository {
 
     const result = await this.prisma.click.update({
       where: { id: click.id },
-      data: {
-        urlId: click.urlId,
-        ipAddress: click.ipAddress,
-        country: click.country,
-        userAgent: click.userAgent,
-      },
+      data: PrismaClickMapper.toUpdatePersistence(click),
     });
 
-    return new Click(
-      result.id,
-      result.urlId,
-      result.ipAddress ?? undefined,
-      result.country ?? undefined,
-      result.userAgent ?? undefined,
-      result.createdAt,
-      result.updatedAt,
-      result.deletedAt ?? undefined,
-    );
+    return PrismaClickMapper.toDomain(result);
   }
 
   async delete(id: string): Promise<void> {
