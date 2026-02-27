@@ -50,7 +50,7 @@ describe('ShortenUrlUseCase', () => {
 
     // THEN (Kontrol)
     expect(result).toBeDefined();
-    expect(result.originalUrl.value).toBe(command.originalUrl.value);
+    expect(result.originalUrl).toBe(command.originalUrl.value);
     expect(mockUrlRepository.create).toHaveBeenCalled();
     expect(mockCacheManager.set).toHaveBeenCalled();
   });
