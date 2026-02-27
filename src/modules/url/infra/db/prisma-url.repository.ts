@@ -3,7 +3,7 @@ import { PrismaService } from 'src/shared/modules/prisma/prisma.service';
 import { Url } from '../../domain/entities/url.entity';
 import { UrlNotFoundError } from '../../domain/errors';
 import { UrlRepository } from '../../domain/repositories/url.repository';
-import { UrlPrismaMapper } from './url-prisma.mapper';
+import { PrismaUrlMapper } from './prisma-url.mapper';
 
 @Injectable()
 export class PrismaUrlRepository implements UrlRepository {
@@ -11,10 +11,10 @@ export class PrismaUrlRepository implements UrlRepository {
 
   async create(url: Url): Promise<Url> {
     const result = await this.prisma.url.create({
-      data: UrlPrismaMapper.toCreatePersistence(url),
+      data: PrismaUrlMapper.toCreatePersistence(url),
     });
 
-    return UrlPrismaMapper.toDomain(result);
+    return PrismaUrlMapper.toDomain(result);
   }
 
   async findByShortCode(shortCode: string): Promise<Url | null> {
@@ -26,7 +26,7 @@ export class PrismaUrlRepository implements UrlRepository {
       return null;
     }
 
-    return UrlPrismaMapper.toDomain(result);
+    return PrismaUrlMapper.toDomain(result);
   }
 
   async findById(id: string): Promise<Url | null> {
@@ -38,7 +38,7 @@ export class PrismaUrlRepository implements UrlRepository {
       return null;
     }
 
-    return UrlPrismaMapper.toDomain(result);
+    return PrismaUrlMapper.toDomain(result);
   }
 
   async findAll(): Promise<Url[]> {
@@ -46,7 +46,7 @@ export class PrismaUrlRepository implements UrlRepository {
       where: { deletedAt: null },
     });
 
-    return result.map((result) => UrlPrismaMapper.toDomain(result));
+    return result.map((result) => PrismaUrlMapper.toDomain(result));
   }
 
   async findAllByUserId(userId: string): Promise<Url[]> {
@@ -54,19 +54,19 @@ export class PrismaUrlRepository implements UrlRepository {
       where: { userId, deletedAt: null },
     });
 
-    return result.map((result) => UrlPrismaMapper.toDomain(result));
+    return result.map((result) => PrismaUrlMapper.toDomain(result));
   }
   async update(url: Url): Promise<Url> {
     const result = await this.prisma.url.update({
       where: { id: url.id, deletedAt: null },
-      data: UrlPrismaMapper.toUpdatePersistence(url),
+      data: PrismaUrlMapper.toUpdatePersistence(url),
     });
 
     if (!result) {
       throw new UrlNotFoundError();
     }
 
-    return UrlPrismaMapper.toDomain(result);
+    return PrismaUrlMapper.toDomain(result);
   }
 
   async delete(id: string): Promise<void> {

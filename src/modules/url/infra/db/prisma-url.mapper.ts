@@ -3,7 +3,7 @@ import { Url } from '../../domain/entities/url.entity';
 import { ShortCodeVO } from '../../domain/value-objects/short-code.vo';
 import { UrlVO } from '../../domain/value-objects/url.vo';
 
-export class UrlPrismaMapper {
+export class PrismaUrlMapper {
   static toDomain(entity: PrismaUrl): Url {
     return new Url(
       entity.id,
