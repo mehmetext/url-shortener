@@ -31,11 +31,12 @@ export class PrismaUserRepository implements UserRepository {
     return PrismaUserMapper.toDomain(created);
   }
 
-  async findByEmail(email: EmailVO): Promise<User> {
+  async findByEmail(email: EmailVO): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { email: email.value },
     });
-    if (!user) throw new UserNotFoundError();
+    if (!user) return null;
+
     return PrismaUserMapper.toDomain(user);
   }
 
@@ -49,7 +50,7 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async update(user: User): Promise<User> {
-    const existingUser = await this.findById(user.id!);
+    const existingUser = await this.findById(user.id);
 
     if (!existingUser) {
       throw new UserNotFoundError();
