@@ -9,11 +9,11 @@ export class PrismaUrlMapper {
       entity.id,
       new UrlVO(entity.originalUrl),
       new ShortCodeVO(entity.shortCode),
-      entity.expiresAt ? new Date(entity.expiresAt) : undefined,
+      entity.expiresAt ?? undefined,
       entity.userId ?? undefined,
       entity.createdAt,
       entity.updatedAt,
-      entity.deletedAt ? new Date(entity.deletedAt) : undefined,
+      entity.deletedAt ?? undefined,
     );
   }
 
