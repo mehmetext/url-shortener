@@ -36,7 +36,7 @@ export class LoginUseCase {
     });
 
     await this.refreshTokenRepository.save(
-      user.id!,
+      user.id,
       jti,
       refreshToken,
       7 * 24 * 60 * 60,
@@ -46,7 +46,13 @@ export class LoginUseCase {
       accessToken,
       refreshToken,
       expiresIn: accessTokenExpiresInSeconds,
-      user,
+      user: {
+        id: user.id,
+        email: user.email.value,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        deletedAt: user.deletedAt,
+      },
     };
   }
 }

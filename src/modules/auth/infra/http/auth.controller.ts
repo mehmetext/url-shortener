@@ -38,20 +38,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiOkResponseGeneric(LoginResponseDto)
   async login(@Req() req: Request & { user: User }): Promise<LoginResponseDto> {
-    const response = await this.loginUseCase.execute(req.user);
-
-    return {
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken,
-      expiresIn: response.expiresIn,
-      user: {
-        id: response.user.id!,
-        email: response.user.email.value,
-        createdAt: response.user.createdAt,
-        updatedAt: response.user.updatedAt,
-        deletedAt: response.user.deletedAt,
-      },
-    };
+    return this.loginUseCase.execute(req.user);
   }
 
   @Post('register')
@@ -63,20 +50,7 @@ export class AuthController {
       body.password,
     );
 
-    const user = await this.registerUseCase.execute(createUserCommand);
-
-    return {
-      accessToken: user.accessToken,
-      refreshToken: user.refreshToken,
-      expiresIn: user.expiresIn,
-      user: {
-        id: user.user.id!,
-        email: user.user.email.value,
-        createdAt: user.user.createdAt,
-        updatedAt: user.user.updatedAt,
-        deletedAt: user.user.deletedAt,
-      },
-    };
+    return this.registerUseCase.execute(createUserCommand);
   }
 
   @Get('me')
@@ -92,21 +66,6 @@ export class AuthController {
   @ApiOkResponseGeneric(LoginResponseDto)
   @UseGuards(AuthGuard('jwt'))
   async refreshToken(@Body() body: RefreshTokenDto): Promise<LoginResponseDto> {
-    const refreshToken = await this.refreshTokenUseCase.execute(
-      body.refreshToken,
-    );
-
-    return {
-      accessToken: refreshToken.accessToken,
-      refreshToken: refreshToken.refreshToken,
-      expiresIn: refreshToken.expiresIn,
-      user: {
-        id: refreshToken.user.id!,
-        email: refreshToken.user.email.value,
-        createdAt: refreshToken.user.createdAt,
-        updatedAt: refreshToken.user.updatedAt,
-        deletedAt: refreshToken.user.deletedAt,
-      },
-    };
+    return this.refreshTokenUseCase.execute(body.refreshToken);
   }
 }

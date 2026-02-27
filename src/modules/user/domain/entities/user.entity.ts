@@ -2,7 +2,7 @@ import { EmailVO } from '../value-objects/email.vo';
 
 export class User {
   constructor(
-    public readonly id: string | undefined,
+    public readonly id: string,
     public readonly email: EmailVO,
     public readonly password: string,
     public readonly createdAt: Date,
