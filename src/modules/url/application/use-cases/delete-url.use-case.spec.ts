@@ -79,6 +79,35 @@ describe('DeleteUrlUseCase', () => {
     expect(mockUrlRepository.delete).toHaveBeenCalledWith(command.id);
   });
 
+  it('should not clear click count cache when URL has no id', async () => {
+    const now = new Date();
+    const urlWithoutId = new Url(
+      undefined,
+      new UrlVO('https://example.com'),
+      new ShortCodeVO('abc123'),
+      undefined,
+      'user-1',
+      now,
+      now,
+      undefined,
+    );
+
+    const command: DeleteUrlCommand = {
+      id: 'some-id',
+    };
+
+    mockUrlRepository.findById.mockResolvedValue(urlWithoutId);
+
+    await useCase.execute(command);
+
+    expect(mockUrlRepository.findById).toHaveBeenCalledWith(command.id);
+    expect(mockCacheManager.del).toHaveBeenCalledTimes(1);
+    expect(mockCacheManager.del).toHaveBeenCalledWith(
+      URL_CACHE_KEY(urlWithoutId.shortCode.value),
+    );
+    expect(mockUrlRepository.delete).toHaveBeenCalledWith(command.id);
+  });
+
   it('should throw UrlNotFoundError when URL does not exist', async () => {
     const command: DeleteUrlCommand = {
       id: 'missing-id',
