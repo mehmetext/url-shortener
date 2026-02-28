@@ -10,6 +10,8 @@ Enterprise-grade, highly scalable, and performant URL Shortener API built with *
 - **Event-Driven Analytics:** Asynchronous click tracking and IP geolocation gathering using `EventEmitter` to decouple the core redirection logic from analytics.
 - **Concurrency Safe:** Utilizes Redis atomic operations (`INCR`) to handle high-traffic click counting, completely preventing race conditions.
 - **Security:** Global and route-specific Rate Limiting (ThrottlerGuard) to prevent spam and abuse.
+- **Robust Testing:** Comprehensive test suite including Unit Tests for core Use Cases (100% coverage on shortening logic) and E2E Tests for API endpoints.
+- **Containerized:** Fully dockerized with a multi-stage build and `docker-compose` for seamless local deployment.
 
 ## 🏛️ Architecture & Principles
 
@@ -26,6 +28,8 @@ The application is structured as a **Modular Monolith**, divided into clearly de
 - **ORM:** Prisma
 - **Caching & Atomic Counters:** Redis (via `cache-manager` & custom generic implementations)
 - **Authentication:** Passport.js, JWT, Bcrypt
+- **Testing:** Jest, Supertest
+- **DevOps:** Docker, Docker Compose
 - **API Documentation:** Swagger / OpenAPI
 - **Validation:** `class-validator` & `class-transformer`
 
@@ -36,22 +40,44 @@ The application is structured as a **Modular Monolith**, divided into clearly de
 - Node.js (v18 or higher)
 - PostgreSQL
 - Redis
+- Docker & Docker Compose (Optional, for containerized setup)
 
-### Installation
+### Option 1: Docker Setup (Recommended)
 
-1. Clone the repository:
+The easiest way to run the application along with its database and cache is via Docker Compose.
+
+1. Clone the repository and navigate to the directory:
    ```bash
-   git clone https://github.com/mehmetext/url-shortener.git
-   cd url-shortener-api
+   git clone [https://github.com/mehmetext/url-shortener.git](https://github.com/mehmetext/url-shortener.git)
+   cd url-shortener
    ```
 
 ````
 
+2. Start the services:
+```bash
+docker compose up -d --build
+
+````
+
+_This command will build the API image, start PostgreSQL and Redis, and run the migrations automatically._
+
+### Option 2: Manual Local Setup
+
+1. Clone the repository:
+
+```bash
+git clone [https://github.com/mehmetext/url-shortener.git](https://github.com/mehmetext/url-shortener.git)
+cd url-shortener
+
+```
+
 2. Install dependencies:
+
 ```bash
 npm install
 
-````
+```
 
 3. Configure Environment Variables:
    Create a `.env` file in the root directory and add the following:
@@ -89,6 +115,22 @@ npm run start:dev
 # Production
 npm run build
 npm run start:prod
+
+```
+
+## 🧪 Testing
+
+The project includes a robust testing environment isolated via mocks for unit tests and a live database connection for E2E testing.
+
+```bash
+# Run isolated Unit Tests
+npm run test
+
+# Run Unit Tests and generate a Coverage Report
+npm run test:cov
+
+# Run End-to-End (E2E) Tests
+npm run test:e2e
 
 ```
 
