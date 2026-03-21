@@ -65,5 +65,19 @@ describe('LoginUseCase', () => {
       expect(result.expiresIn).toBe(15 * 60);
       expect(result.user.email).toBe('test@test.com');
     });
+
+    it('should return login result with development token expiry', async () => {
+      mockConfigService.get.mockReturnValueOnce('development');
+      mockConfigService.getOrThrow.mockReturnValueOnce('accessTokenSecret');
+      mockConfigService.getOrThrow.mockReturnValueOnce('refreshTokenSecret');
+
+      const result = await useCase.execute(mockUser);
+
+      expect(result).toBeDefined();
+      expect(result.accessToken).toBe('access-token');
+      expect(result.refreshToken).toBe('refresh-token');
+      expect(result.expiresIn).toBe(15 * 24 * 60 * 60);
+      expect(result.user.email).toBe('test@test.com');
+    });
   });
 });
