@@ -92,13 +92,43 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s",
+      "!**/*.spec.ts",
+      "!**/*.integration-spec.ts",
+      "!**/*.e2e-spec.ts",
+      "!**/main.ts",
+      "!**/*.module.ts",
+      "!**/*.dto.ts",
+      "!**/*.command.ts",
+      "!**/*.result.ts",
+      "!**/*.event.ts",
+      "!**/*.entity.ts",
+      "!**/*.repository.ts",
+      "!**/*.mapper.ts",
+      "!**/*.controller.ts",
+      "!**/*.strategy.ts",
+      "!**/*.decorator.ts",
+      "!**/*.filter.ts",
+      "!**/*.interceptor.ts",
+      "!**/*.interface.ts",
+      "!**/generated/**",
+      "!**/*.config.ts",
+      "!**/shared/interfaces/**",
+      "!**/shared/constants/**"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "statements": 100,
+        "functions": 100,
+        "lines": 100,
+        "branches": 75
+      }
+    },
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1",
       "^nanoid$": "<rootDir>/__mocks__/nanoid.ts"
     },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }
