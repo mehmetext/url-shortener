@@ -79,5 +79,37 @@ describe('LoginUseCase', () => {
       expect(result.expiresIn).toBe(15 * 24 * 60 * 60);
       expect(result.user.email).toBe('test@test.com');
     });
+
+    it('should save refresh token to repository', async () => {
+      mockConfigService.get.mockReturnValueOnce('production');
+      mockConfigService.getOrThrow.mockReturnValueOnce('accessTokenSecret');
+      mockConfigService.getOrThrow.mockReturnValueOnce('refreshTokenSecret');
+
+      await useCase.execute(mockUser);
+
+      expect(mockRefreshTokenRepository.save.mock.calls[0]).toEqual([
+        mockUser.id,
+        expect.any(String),
+        'refresh-token',
+        7 * 24 * 60 * 60,
+      ]);
+    });
+
+    it('should generate access token with correct options', async () => {
+      mockConfigService.get.mockReturnValue('production');
+      mockConfigService.getOrThrow.mockReturnValueOnce('accessTokenSecret');
+      mockConfigService.getOrThrow.mockReturnValueOnce('refreshTokenSecret');
+
+      await useCase.execute(mockUser);
+
+      expect(mockTokenGenerator.generateToken.mock.calls[0]).toEqual([
+        { sub: mockUser.id, jti: expect.any(String) as string },
+        { expiresIn: '15m', secret: 'accessTokenSecret' },
+      ]);
+      expect(mockTokenGenerator.generateToken.mock.calls[1]).toEqual([
+        { sub: mockUser.id, jti: expect.any(String) as string },
+        { expiresIn: '7d', secret: 'refreshTokenSecret' },
+      ]);
+    });
   });
 });
